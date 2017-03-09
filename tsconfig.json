@@ -1,0 +1,29 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"allowJs": true,
+		"allowUnusedLabels": true,
+		"charset": "utf-8",
+		"experimentalDecorators": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"noFallthroughCasesInSwitch": false,
+		"noImplicitReturns": true,
+		"outDir": "/var/www/podbot",
+		"pretty": false,
+		"removeComments": true,
+		"rootDir": "./ts",
+		"stripInternal": true,
+		"target": "es6"
+	},
+	"exclude": [
+		"typings/Promise.d.ts"
+	],
+	"files": [
+		"ts/encrypt.ts",
+		"ts/index.ts",
+		"ts/pfc.ts",
+		"ts/plush.ts",
+		"ts/test.ts"
+	]
+}

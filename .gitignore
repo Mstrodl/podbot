@@ -1,0 +1,5 @@
+*.js
+.secrets*
+tsc
+node_modules/
+typings/
