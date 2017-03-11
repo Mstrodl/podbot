@@ -17,29 +17,29 @@ I created this bot initially just to provide some basic commands for the [PFC Di
 <dl>
 	<code>4chan [ random | <var>search</var> ]</code>
 	<dd>Searches the catalog of a <a href="https://www.4chan.org/" rel="external">4chan</a> board; by default this is <a href="http://boards.4chan.org/mlp/" rel="external">/mlp/</a> (configurable in <code><a href="ts/FourChan.ts">FourChan.ts</a></code>).  If no argument or <code>random</code> given, then a random thread is returned; otherwise, the first thread that matches the <code><var>search</var></code> argument is returned along with a random image from that thread.</dd>
-	<dt><code>db [ random | <var>search</var> ]</code></dt>
+	<code>db [ random | <var>search</var> ]</code>
 	<dd>Searches <a href="https://www.derpibooru.org/" rel="external">Derpibooru</a>.  If no argument or <code>random</code> given, then a random image is returned; otherwise, a random image based on the <code><var>search</var></code> argument is returned.  The best searches on Derpibooru are tag searches and commas (<code>,</code>) can be used to "and" tags together.</dd>
-	<dt><code>google <var>search</var></code></dt>
+	<code>google <var>search</var></code>
 	<dd>Searches <a href="https://www.google.com/" rel="external">Google</a> and returns the top three results based on the <code><var>search</var></code> argument.</dd>
-	<dt><code>ping</code></dt>
+	<code>ping</code>
 	<dd>Will show the current and average ping times to the bot's server.  The current ping time is based on the timestamp value attached to the command's message and the server's timestamp.  The average is directly from the discord.js API.  This command can only be used either via DM or in a channel which contains the word &quot;bot&quot; in its name.</dd>
-	<dt><code>say <var>message</var></code></dt>
+	<code>say <var>message</var></code>
 	<dd>Will force the bot to say <var>message</var> in the current channel.  This is exposed primarily for testing and likely won't stay that way for long.</dd>
-	<dt><code>uptime</code></dt>
+	<code>uptime</code>
 	<dd>Will show the current uptime for the bot according to the discord.js API.  This command can only be used either via DM or in a channel which contains the word &quot;bot&quot; in its name.</dd>
 </dl>
 
 ### Current custom commands for PFC ([`pfc.ts`](ts/pfc.ts))
 
 <dl>
-	<dt><code>topic <var>topic</var></code></dt>
+	<code>topic <var>topic</var></code>
 	<dd>This command will reformat and re-state <var>topic</var>, pin that new message to the active channel, and remove the original message.  This is intended to making pinning topics to the <code>#podcast</code> channel on PFC easier and, as such, will only work if the channel's name is either <code>#podcast</code> or <code>#bot-fuckery</code>.</dd>
 </dl>
 
 ### Current custom commands for Plush Degenerates ([`plush.ts`](ts/plush.ts))
 
 <dl>
-	<dt><code>thread</code></dt>
+	<code>thread</code>
 	<dd>This will attempt to search for and then display the most likely candidate for the plush thread on the current <a href="https://www.4chan.org/" rel="external">4chan</a> board (by default this is <a href="http://boards.4chan.org/mlp/" rel="external">/mlp/</a>).  This is accomplished first by searching the catalog for a thread with &quot;plush thread&quot; in either the subject or comment and, if nothing is found, then searching for just the word &quot;plush&quot;.</dd>
 </dl>
 
