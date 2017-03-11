@@ -6,6 +6,14 @@ namespace Unproxied {
 	export class Collection<Key, Value> extends Map<Key, Value> implements Collection.Like<Key, Value> {
 		public readonly id: Symbol;
 
+		public static from<Key, Value>(iterable?: Iterable<[Key, Value]>): Collection<Key, Value> {
+			return new Proxy<Collection<Key, Value>>(new this<Key, Value>(iterable), {
+				get: (target: Collection<Key, Value>, property: any, receiver: Collection<Key, Value>): any => { return (target.has(property)) ? target.get(property) : target[property]; },
+				has: (target: Collection<Key, Value>, property: any): boolean => { return target.has(property) || target[property]; },
+				set: (target: Collection<Key, Value>, property: any, value: any, receiver: Collection<Key, Value>): boolean => { return Boolean(target.set(property, value)); }
+			});
+		}
+
 		constructor(iterable?: Iterable<[Key, Value]>) {
 			super(iterable);
 			this.id = Symbol();
@@ -123,12 +131,11 @@ namespace Unproxied {
 
 export const Collection: typeof Unproxied.Collection = new Proxy<typeof Unproxied.Collection>(Unproxied.Collection, {
 	construct: <Key, Value>(target: typeof Unproxied.Collection, argumentsList: Array<any>, newTarget: typeof Unproxied.Collection): Unproxied.Collection<Key, Value> => {
-		const result: Unproxied.Collection<Key, Value> = new Proxy<Unproxied.Collection<Key, Value>>(new Unproxied.Collection<Key, Value>(argumentsList[0]), {
+		return new Proxy<Unproxied.Collection<Key, Value>>(new Unproxied.Collection<Key, Value>(argumentsList[0]), {
 			get: (target: Unproxied.Collection<Key, Value>, property: any, receiver: Unproxied.Collection<Key, Value>): any => { return (target.has(property)) ? target.get(property) : target[property]; },
 			has: (target: Unproxied.Collection<Key, Value>, property: any): boolean => { return target.has(property) || target[property]; },
 			set: (target: Unproxied.Collection<Key, Value>, property: any, value: any, receiver: Unproxied.Collection<Key, Value>): boolean => { return Boolean(receiver.set(property, value)); }
 		});
-		return result;
 	}
 });
 
@@ -136,7 +143,7 @@ const fubar: Unproxied.Collection<string, string> = new Unproxied.Collection<str
 fubar.set("key1", "vlue1").set("key2", "value2").set("key3", "value3").set("key4", "vlue4").set("key5", "value5").set("key6", "vlue6").set("key7", "value7").set("key8", "value8").set("key9", "value9");
 console.log(fubar);
 
-const bar: Unproxied.Collection<string, string> = new Collection<string, string>();
+const bar: Unproxied.Collection<string, string> = Unproxied.Collection.from<string, string>();
 bar["key1"] = "vlue1";
 bar["key2"] = "value2";
 bar["key3"] = "value3";
