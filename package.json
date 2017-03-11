@@ -1,10 +1,15 @@
 {
+  "files": "/var/www/podbot/",
   "name": "podbot",
   "version": "0.1",
   "description": "Just another Discord bot, not very customizable.  Written in TypeScript for ES6 output on node.js",
+  "keywords": ["discord", "discord bot", "discord bot framework", "typescript", "pony"],
   "homepage": "https://iwtcits.com",
+  "bugs": {
+  	"url": "https://github.com/CorpulentBrony/podbot/issues",
+  	"email": "corpulent@brony.email"
+  },
   "main": "index.js",
-  "files": "/var/www/podbot/",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,7 +18,10 @@
     "email": "corpulent@brony.email",
     "url": "https://youtube.com/c/CorpulentBrony"
   },
-  "license": "DONUT STEELE",
+  "license": "CC-BY-NC-SA-4.0",
+  "engines": {
+  	"node": ">=7.7.2"
+  },
   "private": true,
   "dependencies": {
     "bufferutil": ">=2.0.1",

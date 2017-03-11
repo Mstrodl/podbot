@@ -66,13 +66,17 @@ I mean, this really isn't meant for distribution, but if you insist:
 5.  Modify [`index.ts`](ts/index.ts) file.
     -   Set the `botDirectory` Path to the top level directory.
     -   Follow the example of how `pfcFile` and `pfc` and `plushFile` and `plush` are initialized and then ensure the `configure()` method is executed.
-6.  Transpile the project by running `tsc`.
-7.  Run `node encrypt.js` to encrypt the bot API key(s) and/or the Google API/CX. This will generate corresponding `.secrets_`_`thing`_ files. Your [`.secrets_all.json`](.secrets_all.json) file will be wiped of all sensitive information. This command should only be executed one time, during setup.
-8.  Run `node index.js` to start up your bot(s).
+6.  Modify [`package.json`](package.json) and set the `files` property to the top level directory.
+7.  Modify [`tsconfig.json`](tsconfig.json) and set the `compilerOptions.outDir` to the top level directory.
+8.  Download and install dependencies locally by running `npm update`.
+9.  Transpile the project by running `node_modules/typescript/bin/tsc`.
+10.  Run `node encrypt.js` to encrypt the bot API key(s) and/or the Google API/CX. This will generate corresponding `.secrets_`_`thing`_ files. Your [`.secrets_all.json`](.secrets_all.json) file will be wiped of all sensitive information. This command should only be executed one time, during setup.
+11.  Run `node index.js` to start up your bot(s).
 
 I've yet to test any of this outside of my current bot configurations, but if you run into problems, feel free to open an issue on [GitHub](https://github.com/CorpulentBrony/podbot). I'm not really planning on providing much support of this outside of my associates, but if I can answer any inquiries I will try.
 
 [![Creative Commons License](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 podbot by Corpulent Brony is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
-pls DONUT STEELE
+
+tl;dr DONUT STEELE

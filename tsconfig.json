@@ -1,6 +1,6 @@
 {
-	"compileOnSave": true,
 	"compilerOptions": {
+		"outDir": "/var/www/podbot",
 		"allowJs": true,
 		"allowUnusedLabels": true,
 		"charset": "utf-8",
@@ -9,13 +9,13 @@
 		"moduleResolution": "node",
 		"noFallthroughCasesInSwitch": false,
 		"noImplicitReturns": true,
-		"outDir": "/var/www/podbot",
 		"pretty": false,
 		"removeComments": true,
 		"rootDir": "./ts",
 		"stripInternal": true,
 		"target": "es6"
 	},
+	"compileOnSave": true,
 	"exclude": [
 		"typings/Promise.d.ts"
 	],
