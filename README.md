@@ -1,16 +1,16 @@
 # podbot
 
-## **_`notices your bot`_**
+## **_notices your bot_**
 
-## `OwO What's this?`
+## OwO What's this?
 
 `podbot` is a [Discord](https://discordapp.com/) bot written in [TypeScript](https://www.typescriptlang.org/) designed to transpile to [ECMAScript 6](http://es6-features.org/) code and to run on [Node.js](https://nodejs.org/). It currently supports running multiple bots concurrently through relatively simple configuration (this may become easier in the future). It leverages the [discord.js](https://discord.js.org/) API.
 
-## `Why?`
+## Why?
 
 I created this bot initially just to provide some basic commands for the [PFC Discord server](http://discord.pfc.moe/). Simultaneously, I created a seperate bot to provide other custom commands to the Plush Degenerates Discord server. Eventually I merged both into the same codebase.
 
-## `What can it do?`
+## What can it do?
 
 ### Current global commands ([`Command.Default.ts`](ts/Command.Default.ts))
 
@@ -49,7 +49,7 @@ I created this bot initially just to provide some basic commands for the [PFC Di
 -   As configured, the bot is set to log all commands to a local mongodb instance. If you wish to disable this, simply unhook the `any` command from the corresponding bot file (see [`pfc.ts`](ts/pfc.ts) or [`plush.ts`](ts/plush.ts)). If you wish to configure the logging, see [`CommandLogger.ts`](ts/CommandLogger.ts).
 -   All commands are aliasable, renameable, and overrideable. Additionally, new commands can be added easily. See the files [`pfc.ts`](ts/pfc.ts) and [`plush.ts`](ts/plush.ts) for examples.
 
-## `How can I set it up?`
+## How can I set it up?
 
 I mean, this really isn't meant for distribution, but if you insist:
 
