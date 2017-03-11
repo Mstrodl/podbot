@@ -45,10 +45,11 @@ export namespace Defaults {
 			const result: Derpibooru.Response.Image = (parsedCommand.args === "" || parsedCommand.args === "random") ? await Derpibooru.random() : await Derpibooru.search(parsedCommand.args);
 			const imagePageUrl: string = Derpibooru.Response.formatImagePageUrl(result);
 			return sayEmbed(parsedCommand, {
-				footer: imagePageUrl, 
+				description: result.file_name + " uploaded by " + result.uploader,
+				footer: result.tags, 
 				footerImageUrl: Derpibooru.favIconUrl.toString(), 
 				image: Derpibooru.Response.formatImageUrl(result), 
-				title: result.file_name + " uploaded by " + result.uploader, 
+				title: imagePageUrl, 
 				url: imagePageUrl
 			});
 		} catch (e) {

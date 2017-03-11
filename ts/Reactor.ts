@@ -1,5 +1,7 @@
-export class ReactorCollection implements ReactorCollection.Like {
+import * as Discord from "discord.js";
 
+export class ReactorCollection extends Map<Reactor.Id, Discord.Message> implements ReactorCollection.Like {
+	public readonly tracked: Map<string, Reactor.Id>;
 }
 
 export namespace ReactorCollection {
@@ -14,9 +16,9 @@ export class Reactor implements Reactor.Like {
 
 	constructor(message: Discord.Message) { this.message = message; }
 
-	public get id(): Reactor.Id { return { channel: message.channel.id, message: message.id }; }
+	public get id(): Reactor.Id { return { channel: this.message.channel.id, message: this.message.id }; }
 
-	public async configureEmoticons() { this.reactions = { prev: await this.message.react(Reactor.Emoticons.prev), next: await this.message.react(Reactor.Emoticons.next), stop: await this.message.react(React.Emoticons.stop) }; }
+	public async configureEmoticons() { this.reactions = { prev: await this.message.react(Reactor.emoticons.prev), next: await this.message.react(Reactor.emoticons.next), stop: await this.message.react(Reactor.emoticons.stop) }; }
 }
 
 export namespace Reactor {

@@ -20,6 +20,7 @@
 		"typings/Promise.d.ts"
 	],
 	"files": [
+		"ts/Collection.ts",
 		"ts/encrypt.ts",
 		"ts/index.ts",
 		"ts/pfc.ts",

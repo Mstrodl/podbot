@@ -33,10 +33,10 @@ export class BotExecutor {
 			this.name = message.name;
 	}
 
-	private onStderrData(chunk: Buffer | string): void { console.error(this.prefix + chunk.slice(0, -1)) + BotExecutor.colors.reset; }
-	private onStderrError(err: Error): void { console.error(this.prefix + "Error on stderr: \n" + err.message) + BotExecutor.colors.reset; }
-	private onStdoutData(chunk: Buffer | string): void { console.log(this.prefix + chunk.slice(0, -1)) + BotExecutor.colors.reset; }
-	private onStdoutError(err: Error): void { console.error(this.prefix + "Error on stdout: \n" + err.message) + BotExecutor.colors.reset; }
+	private onStderrData(chunk: Buffer | string): void { console.error(this.prefix + chunk.slice(0, -1)) + " " + BotExecutor.colors.reset; }
+	private onStderrError(err: Error): void { console.error(this.prefix + "Error on stderr: \n" + err.message) + " " + BotExecutor.colors.reset; }
+	private onStdoutData(chunk: Buffer | string): void { console.log(this.prefix + chunk.slice(0, -1)) + " " + BotExecutor.colors.reset; }
+	private onStdoutError(err: Error): void { console.error(this.prefix + "Error on stdout: \n" + err.message) + " " + BotExecutor.colors.reset; }
 }
 
 export namespace BotExecutor {

@@ -18,20 +18,31 @@ export async function random(): Promise<Response.Image> {
 }
 
 export async function search(search: string): Promise<Response.Image> {
-	const images: Response.Search = await GenericApi.Get.json<Response.Search>(url.setPathname(pathname.search), query.search.set("q", search));
+	const searchQuery: Query = query.search.set("q", search);
+	const searchUrl: Url = url.setPathname(pathname.search);
+	let images: Response.Search = await GenericApi.Get.json<Response.Search>(searchUrl, searchQuery);
 
 	if (images.total === 0)
 		throw new NoponyError("No images were found for `" + search + "`");
+	const pageNumber: number = await Random.integer(Math.ceil(images.total / 15)) + 1;
+	console.log("i'm choosing page number ", pageNumber);
+
+	if (pageNumber > 1)
+		images = await GenericApi.Get.json<Response.Search>(searchUrl, searchQuery.set("page", pageNumber));
 	return images.search[await Random.integer(images.search.length)];
 }
 
 export namespace Response {
 	export interface Image {
+		downvotes: number;
+		faves: number;
 		file_name: string;
 		id: string;
 		image: string;
 		score: number;
+		tags: string;
 		uploader: string;
+		upvotes: number;
 	}
 
 	export interface Random { images: Array<Image>; }
