@@ -1,6 +1,7 @@
 *.js
 .secrets*
 !.secrets_all.json
+github
 tsc
 node_modules/
 typings/
