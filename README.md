@@ -60,15 +60,12 @@ I mean, this really isn't meant for distribution, but if you insist:
     -   Add or remove entries from `botFiles` object to correspond with your bot names.
     -   Set the `keyFile` Path to a file that contains a key that will be used for encryption/decryption.
     -   Modify the `Bots` type to match the bot(s) you are configuring
-
 4.  Modify the [`.secrets_all.json`](.secrets_all.json) file in the top directory with a structure as defined by the `SecretsAll` interface in [`Crypt.ts`](ts/Crypt.ts).
     -   This file will contain the Discord API key for your bot(s).
     -   If you want to access the Google search API, then get a [Custom Search API](https://console.developers.google.com/) key from Google and place it and the CX in this file. If you don't wish to use Google, then set these to empty strings.
-
 5.  Modify [`index.ts`](ts/index.ts) file.
     -   Set the `botDirectory` Path to the top level directory.
     -   Follow the example of how `pfcFile` and `pfc` and `plushFile` and `plush` are initialized and then ensure the `configure()` method is executed.
-
 6.  Transpile the project by running `tsc`.
 7.  Run `node encrypt.js` to encrypt the bot API key(s) and/or the Google API/CX. This will generate corresponding `.secrets_`_`thing`_ files. Your [`.secrets_all.json`](.secrets_all.json) file will be wiped of all sensitive information. This command should only be executed one time, during setup.
 8.  Run `node index.js` to start up your bot(s).
