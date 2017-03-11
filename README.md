@@ -1,60 +1,33 @@
-<main>
-
-<style type="text/css">
-            footer > div {
-                border-top: 1px solid black;
-                margin-top: 3vh;
-                padding-top: 3vh;
-            }
-            h1 { font-family: monospace; }
-            h2 { font-family: monospace; }
-            .bold { font-weight: bolder; }
-            .italic { font-style: italic; }
-            .mono { font-family: monospace; }
-            .sub { vertical-align: sub; }
-            .sup { vertical-align: super; }
-        </style>
-<header>
-
 # podbot
 
-</header> <section>
-
-## <span class="italic super sub">notices your bot</span>
+## **_notices your bot_**
 
 ## OwO What's this?
 
-<div>
-<span class="bold mono">podbot</span> is a [Discord](https://discordapp.com/) bot written in [TypeScript](https://www.typescriptlang.org/) designed to transpile to [ECMAScript 6](http://es6-features.org/) code and to run on [Node.js](https://nodejs.org/). It currently supports running multiple bots concurrently through relatively simple configuration (this may become easier in the future). It leverages the [discord.js](https://discord.js.org/) API.
-
-</div>
-</section> <section>
+`podbot` is a [Discord](https://discordapp.com/) bot written in [TypeScript](https://www.typescriptlang.org/) designed to transpile to [ECMAScript 6](http://es6-features.org/) code and to run on [Node.js](https://nodejs.org/). It currently supports running multiple bots concurrently through relatively simple configuration (this may become easier in the future). It leverages the [discord.js](https://discord.js.org/) API.
 
 ## Why?
 
-<div>
 I created this bot initially just to provide some basic commands for the [PFC Discord server](http://discord.pfc.moe/). Simultaneously, I created a seperate bot to provide other custom commands to the Plush Degenerates Discord server. Eventually I merged both into the same codebase.
-
-</div>
-</section> <section>
 
 ## What can it do?
 
-<div>
-### Current global commands (`Command.Default.ts`)
+### Current global commands ([`Command.Default.ts`](ts/Command.Default.ts))
 
-`4chan [ random | search ]`
-:   Searches the catalog of a [4chan](https://www.4chan.org/) board; by default this is [/mlp/](http://boards.4chan.org/mlp/) (configurable in `FourChan.ts`). If no argument or `random` given, then a random thread is returned; otherwise, the first thread that matches the `search` argument is returned along with a random image from that thread.
-`db [ random | search ]`
-:   Searches [Derpibooru](https://www.derpibooru.org/). If no argument or `random` given, then a random image is returned; otherwise, a random image based on the `search` argument is returned. The best searches on Derpibooru are tag searches and commas (`,`) can be used to "and" tags together.
-`google search`
-:   Searches [Google](https://www.google.com/) and returns the top three results bsaed on the `search` argument.
-`ping`
-:   Will show the current and average ping times to the bot's server. The current ping time is based on the timestamp value attached to the command's message and the server's timestamp. The average is directly from the discord.js API. This command can only be used either via DM or in a channel which contains the word "bot" in its name.
-`say message`
-:   Will force the bot to say <var>message</var> in the current channel. This is exposed primarily for testing and likely won't stay that way for long.
-`uptime`
-:   Will show the current uptime for the bot according to the discord.js API. This command can only be used either via DM or in a channel which contains the word "bot" in its name.
+<dl>
+	<dt><code>4chan [ random | <var>search</var> ]</code></dt>
+	<dd>Searches the catalog of a <a href="https://www.4chan.org/" rel="external">4chan</a> board; by default this is <a href="http://boards.4chan.org/mlp/" rel="external">/mlp/</a> (configurable in <code><a href="ts/FourChan.ts">FourChan.ts</a></code>).  If no argument or <code>random</code> given, then a random thread is returned; otherwise, the first thread that matches the <code><var>search</var></code> argument is returned along with a random image from that thread.</dd>
+	<dt><code>db [ random | <var>search</var> ]</code></dt>
+	<dd>Searches <a href="https://www.derpibooru.org/" rel="external">Derpibooru</a>.  If no argument or <code>random</code> given, then a random image is returned; otherwise, a random image based on the <code><var>search</var></code> argument is returned.  The best searches on Derpibooru are tag searches and commas (<code>,</code>) can be used to "and" tags together.</dd>
+	<dt><code>google <var>search</var></code></dt>
+	<dd>Searches <a href="https://www.google.com/" rel="external">Google</a> and returns the top three results bsaed on the <code><var>search</var></code> argument.</dd>
+	<dt><code>ping</code></dt>
+	<dd>Will show the current and average ping times to the bot's server.  The current ping time is based on the timestamp value attached to the command's message and the server's timestamp.  The average is directly from the discord.js API.  This command can only be used either via DM or in a channel which contains the word &quot;bot&quot; in its name.</dd>
+	<dt><code>say <var>message</var></code></dt>
+	<dd>Will force the bot to say <var>message</var> in the current channel.  This is exposed primarily for testing and likely won't stay that way for long.</dd>
+	<dt><code>uptime</code></dt>
+	<dd>Will show the current uptime for the bot according to the discord.js API.  This command can only be used either via DM or in a channel which contains the word &quot;bot&quot; in its name.</dd>
+</dl>
 
 ### Current custom commands for PFC (`pfc.ts`)
 
