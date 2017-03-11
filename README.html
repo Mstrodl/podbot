@@ -7,6 +7,9 @@
 		<link rel="bestpony" type="text/html" href="http://tsibp.com" hreflang="en">
 		<link rel="license" type="text/html" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
 		<title>podbot</title>
+	</head>
+	<body>
+		<main>
 		<style type="text/css">
 			footer > div {
 				border-top: 1px solid black;
@@ -18,16 +21,15 @@
 			.bold { font-weight: bolder; }
 			.italic { font-style: italic; }
 			.mono { font-family: monospace; }
+			.sub { vertical-align: sub; }
+			.sup { vertical-align: super; }
 		</style>
-	</head>
-	<body>
-		<main>
 			<header>
 				<h1>podbot</h1>
 			</header>
 			<section>
-				<h2><span class="italic">notices your bot</span><br>
-				OwO What's this?</h2>
+				<h2><span class="italic super sub">notices your bot</span></h2>
+				<h2>OwO What's this?</h2>
 				<div>
 					<span class="bold mono">podbot</span> is a <a href="https://discordapp.com/" rel="external">Discord</a> bot written in <a href="https://www.typescriptlang.org/" rel="external">TypeScript</a> designed to transpile to <a href="http://es6-features.org/" rel="external">ECMAScript 6</a> code and to run on <a href="https://nodejs.org/" rel="external">Node.js</a>.  It currently supports running multiple bots concurrently through relatively simple configuration (this may become easier in the future).  It leverages the <a href="https://discord.js.org/" rel="external">discord.js</a> API.
 				</div>
@@ -48,7 +50,7 @@
 						<dt><code>db [ random | <var>search</var> ]</code></dt>
 						<dd>Searches <a href="https://www.derpibooru.org/" rel="external">Derpibooru</a>.  If no argument or <code>random</code> given, then a random image is returned; otherwise, a random image based on the <code><var>search</var></code> argument is returned.  The best searches on Derpibooru are tag searches and commas (<code>,</code>) can be used to "and" tags together.</dd>
 						<dt><code>google <var>search</var></code></dt>
-						<dd>Searches <a href="https://www.google.com/" rel="external">Google</a> and returns the top three results bsaed on the <code><var>search</var></code> argument.</dd>
+						<dd>Searches <a href="https://www.google.com/" rel="external">Google</a> and returns the top three results based on the <code><var>search</var></code> argument.</dd>
 						<dt><code>ping</code></dt>
 						<dd>Will show the current and average ping times to the bot's server.  The current ping time is based on the timestamp value attached to the command's message and the server's timestamp.  The average is directly from the discord.js API.  This command can only be used either via DM or in a channel which contains the word &quot;bot&quot; in its name.</dd>
 						<dt><code>say <var>message</var></code></dt>
@@ -91,7 +93,7 @@
 							</ul>
 						</li>
 						<li>
-							Create a <code>.secrets_all.json</code> file in the top directory with a structure as defined by the <code>SecretsAll</code> interface in <code><a href="ts/Crypt.ts">Crypt.ts</a></code>.
+							Modify the <code>.secrets_all.json</code> file in the top directory with a structure as defined by the <code>SecretsAll</code> interface in <code><a href="ts/Crypt.ts">Crypt.ts</a></code>.
 							<ul>
 								<li>This file will contain the Discord API key for your bot(s).</li>
 								<li>If you want to access the Google search API, then get a <a href="https://console.developers.google.com/" rel="external">Custom Search API</a> key from Google and place it and the CX in this file.  If you don't wish to use Google, then set these to empty strings.</li>

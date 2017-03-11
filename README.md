@@ -20,7 +20,7 @@ I created this bot initially just to provide some basic commands for the [PFC Di
 	<dt><code>db [ random | <var>search</var> ]</code></dt>
 	<dd>Searches <a href="https://www.derpibooru.org/" rel="external">Derpibooru</a>.  If no argument or <code>random</code> given, then a random image is returned; otherwise, a random image based on the <code><var>search</var></code> argument is returned.  The best searches on Derpibooru are tag searches and commas (<code>,</code>) can be used to "and" tags together.</dd>
 	<dt><code>google <var>search</var></code></dt>
-	<dd>Searches <a href="https://www.google.com/" rel="external">Google</a> and returns the top three results bsaed on the <code><var>search</var></code> argument.</dd>
+	<dd>Searches <a href="https://www.google.com/" rel="external">Google</a> and returns the top three results based on the <code><var>search</var></code> argument.</dd>
 	<dt><code>ping</code></dt>
 	<dd>Will show the current and average ping times to the bot's server.  The current ping time is based on the timestamp value attached to the command's message and the server's timestamp.  The average is directly from the discord.js API.  This command can only be used either via DM or in a channel which contains the word &quot;bot&quot; in its name.</dd>
 	<dt><code>say <var>message</var></code></dt>
@@ -29,63 +29,53 @@ I created this bot initially just to provide some basic commands for the [PFC Di
 	<dd>Will show the current uptime for the bot according to the discord.js API.  This command can only be used either via DM or in a channel which contains the word &quot;bot&quot; in its name.</dd>
 </dl>
 
-### Current custom commands for PFC (`pfc.ts`)
+### Current custom commands for PFC ([`pfc.ts`](ts/pfc.ts))
 
-`topic topic`
-:   This command will reformat and re-state <var>topic</var>, pin that new message to the active channel, and remove the original message. This is intended to making pinning topics to the `#podcast` channel on PFC easier and, as such, will only work if the channel's name is either `#podcast` or `#bot-fuckery`.
+<dl>
+	<dt><code>topic <var>topic</var></code></dt>
+	<dd>This command will reformat and re-state <var>topic</var>, pin that new message to the active channel, and remove the original message.  This is intended to making pinning topics to the <code>#podcast</code> channel on PFC easier and, as such, will only work if the channel's name is either <code>#podcast</code> or <code>#bot-fuckery</code>.</dd>
+</dl>
 
-### Current custom commands for Plush Degenerates (`plush.ts`)
+### Current custom commands for Plush Degenerates ([`plush.ts`](ts/plush.ts))
 
-`thread`
-:   This will attempt to search for and then display the most likely candidate for the plush thread on the current [4chan](https://www.4chan.org/) board (by default this is [/mlp/](http://boards.4chan.org/mlp/)). This is accomplished first by searching the catalog for a thread with "plush thread" in either the subject or comment and, if nothing is found, then searching for just the word "plush".
+<dl>
+	<dt><code>thread</code></dt>
+	<dd>This will attempt to search for and then display the most likely candidate for the plush thread on the current <a href="https://www.4chan.org/" rel="external">4chan</a> board (by default this is <a href="http://boards.4chan.org/mlp/" rel="external">/mlp/</a>).  This is accomplished first by searching the catalog for a thread with &quot;plush thread&quot; in either the subject or comment and, if nothing is found, then searching for just the word &quot;plush&quot;.</dd>
+</dl>
 
 ### Other notes
 
--   Commands can be issued either in a channel, a group DM, or a direct DM. If in a channel or a group DM, then the command must be prefixed by the trigger string (as configured in both `pfc.ts` and `plush.ts` this is `!`). In a DM, the command should not contain the prefix.
--   As configured, the bot is set to log all commands to a local mongodb instance. If you wish to disable this, simply unhook the `any` command from the corresponding bot file (see `pfc.ts` or `plush.ts`). If you wish to configure the logging, see `CommandLogger.ts`.
--   All commands are aliasable, renameable, and overrideable. Additionally, new commands can be added easily. See the files `pfc.ts` and `plush.ts` for examples.
-
-</div>
-</section> <section>
+-   Commands can be issued either in a channel, a group DM, or a direct DM. If in a channel or a group DM, then the command must be prefixed by the trigger string (as configured in both [`pfc.ts`](ts/pfc.ts) and [`plush.ts`](ts/plush.ts) this is `!`). In a DM, the command should not contain the prefix.
+-   As configured, the bot is set to log all commands to a local mongodb instance. If you wish to disable this, simply unhook the `any` command from the corresponding bot file (see [`pfc.ts`](ts/pfc.ts) or [`plush.ts`](ts/plush.ts)). If you wish to configure the logging, see [`CommandLogger.ts`](ts/CommandLogger.ts).
+-   All commands are aliasable, renameable, and overrideable. Additionally, new commands can be added easily. See the files [`pfc.ts`](ts/pfc.ts) and [`plush.ts`](ts/plush.ts) for examples.
 
 ## How can I set it up?
 
-<div>
 I mean, this really isn't meant for distribution, but if you insist:
 
 1.  Get a Discord API key for a bot by following [these instructions](https://discordapp.com/developers/applications/me).
-2.  Configure a `bot.ts` file like I have done for `pfc.ts` and `plush.ts`.
-3.  Modify the `Crypt.ts` file.
+2.  Configure a `bot.ts` file like I have done for [`pfc.ts`](ts/pfc.ts) and [`plush.ts`](ts/plush.ts).
+3.  Modify the [`Crypt.ts`](ts/Crypt.ts) file.
     -   Set the `secretsDirectory` Path to the top level directory.
     -   Add or remove entries from `botFiles` object to correspond with your bot names.
     -   Set the `keyFile` Path to a file that contains a key that will be used for encryption/decryption.
     -   Modify the `Bots` type to match the bot(s) you are configuring
 
-4.  Create a `.secrets_all.json` file in the top directory with a structure as defined by the `SecretsAll` interface in `Crypt.ts`.
+4.  Modify the [`.secrets_all.json`](.secrets_all.json) file in the top directory with a structure as defined by the `SecretsAll` interface in [`Crypt.ts`](ts/Crypt.ts).
     -   This file will contain the Discord API key for your bot(s).
     -   If you want to access the Google search API, then get a [Custom Search API](https://console.developers.google.com/) key from Google and place it and the CX in this file. If you don't wish to use Google, then set these to empty strings.
 
-5.  Modify `index.ts` file.
+5.  Modify [`index.ts`](ts/index.ts) file.
     -   Set the `botDirectory` Path to the top level directory.
     -   Follow the example of how `pfcFile` and `pfc` and `plushFile` and `plush` are initialized and then ensure the `configure()` method is executed.
 
 6.  Transpile the project by running `tsc`.
-7.  Run `node encrypt.js` to encrypt the bot API key(s) and/or the Google API/CX. This will generate corresponding `.secrets_thing` files. Your `.secrets_all.json` file will be wiped of all sensitive information. This command should only be executed one time, during setup.
+7.  Run `node encrypt.js` to encrypt the bot API key(s) and/or the Google API/CX. This will generate corresponding `.secrets_`_`thing`_ files. Your [`.secrets_all.json`](.secrets_all.json) file will be wiped of all sensitive information. This command should only be executed one time, during setup.
 8.  Run `node index.js` to start up your bot(s).
 
 I've yet to test any of this outside of my current bot configurations, but if you run into problems, feel free to open an issue on [GitHub](https://github.com/CorpulentBrony/podbot). I'm not really planning on providing much support of this outside of my associates, but if I can answer any inquiries I will try.
 
-</div>
-</section> <footer>
-
-<div>
-<div>
 [![Creative Commons License](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
 
-</div>
-<div>
 podbot by Corpulent Brony is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
-
-</div>
-</div>
-</footer> </main>
+pls DONUT STEELE
