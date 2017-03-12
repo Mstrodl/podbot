@@ -18,7 +18,7 @@ I created this bot initially just to provide some basic commands for the [PFC Di
 	<code>4chan [ random | <var>search</var> ]</code>
 	<dd>Searches the catalog of a <a href="https://www.4chan.org/" rel="external">4chan</a> board; by default this is <a href="http://boards.4chan.org/mlp/" rel="external">/mlp/</a> (configurable in <code><a href="ts/FourChan.ts">FourChan.ts</a></code>).  If no argument or <code>random</code> given, then a random thread is returned; otherwise, the first thread that matches the <code><var>search</var></code> argument is returned along with a random image from that thread.</dd>
 	<code>db [ random | <var>search</var> ]</code>
-	<dd>Searches <a href="https://www.derpibooru.org/" rel="external">Derpibooru</a>.  If no argument or <code>random</code> given, then a random image is returned; otherwise, a random image based on the <code><var>search</var></code> argument is returned.  The best searches on Derpibooru are tag searches and commas (<code>,</code>) can be used to "and" tags together.</dd>
+	<dd>Searches <a href="https://www.derpibooru.org/" rel="external">Derpibooru</a>.  If no argument or <code>random</code> given, then a random image is returned; otherwise, a random image based on the <code><var>search</var></code> argument is returned.  The best searches on Derpibooru are tag searches and commas (<code>,</code>) can be used to &quot;and&quot; tags together.</dd>
 	<code>google <var>search</var></code>
 	<dd>Searches <a href="https://www.google.com/" rel="external">Google</a> and returns the top three results based on the <code><var>search</var></code> argument.</dd>
 	<code>ping</code>
@@ -77,6 +77,6 @@ I've yet to test any of this outside of my current bot configurations, but if yo
 
 [![Creative Commons License](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
 
-podbot by Corpulent Brony is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
+`podbot` by Corpulent Brony is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 tl;dr DONUT STEELE

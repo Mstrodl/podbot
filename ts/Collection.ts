@@ -3,25 +3,29 @@ import * as Random from "./Random";
 //https://discord.js.org/#/docs/main/stable/class/Collection
 
 namespace Unproxied {
-	export class Collection<Key, Value> extends Map<Key, Value> implements Collection.Like<Key, Value> {
+	export class Collection<Key, Value> implements Collection.Like<Key, Value> {
 		public readonly id: Symbol;
-
-		public static from<Key, Value>(iterable?: Iterable<[Key, Value]>): Collection<Key, Value> {
-			return new Proxy<Collection<Key, Value>>(new this<Key, Value>(iterable), {
-				get: (target: Collection<Key, Value>, property: any, receiver: Collection<Key, Value>): any => { return (target.has(property)) ? target.get(property) : target[property]; },
-				has: (target: Collection<Key, Value>, property: any): boolean => { return target.has(property) || target[property]; },
-				set: (target: Collection<Key, Value>, property: any, value: any, receiver: Collection<Key, Value>): boolean => { return Boolean(target.set(property, value)); }
-			});
-		}
+		private cache: { keys?: Array<Key>, values?: Array<Value> };
+		private readonly collection: Map<Key, Value>;
 
 		constructor(iterable?: Iterable<[Key, Value]>) {
-			super(iterable);
+			this.cache = {};
+			this.collection = new Map<Key, Value>(iterable);
 			this.id = Symbol();
 		}
 
 		public get length(): number { return this.size; }
+		public get size(): number { return this.collection.size; }
+		public get[Symbol.species](): any { return this.constructor; }
+		public get[Symbol.toStringTag](): string { return "Collection"; }
 
-		public array(): Array<Value> { return Array.from(super.values()); } // this should be cached to match the Discord.Collection API
+		public array(): Array<Value> { return this.cache.values || (this.cache.values = Array.from(this.collection.values())); }
+
+		public clear(): void {
+			this.collection.clear();
+			this.cache = { keys: undefined, values: undefined };
+		}
+
 		public clone(): Collection<Key, Value> { return new Collection<Key, Value>(this); }
 
 		public concat(...collections: Array<Collection<Key, Value>>): Collection<Key, Value> {
@@ -32,7 +36,29 @@ namespace Unproxied {
 			return result;
 		}
 
-		public deleteAll(): void { super.clear(); } // the Discord.Collection object actually just iterates through running deleteAll for each object stored in the Collection
+		public delete(key: Key): boolean {
+			this.cache = { keys: undefined, values: undefined };
+			return this.collection.delete(key);
+		}
+
+		public deleteAll(): void {
+			this.forEach((element: Value): void => {
+				if (element != undefined && (typeof (<any>element).deleteAll === "function" || Object.prototype.toString.call((<any>element).deleteAll) === "[object Function]"))
+					(<{ deleteAll(): any }>(<any>element)).deleteAll();
+			});
+		}
+
+		public *entries(): Iterator<Collection.Item<Key, Value>> {
+			const entries: Iterator<Collection.Item<Key, Value>> = this.collection.entries();
+			let entry: IteratorResult<Collection.Item<Key, Value>> = entries.next();
+
+			for (; !entry.done; entry = entries.next()) {
+				const result: Collection.Item<Key, Value> = entry.value;
+				[result.key, result.value] = [result[0], result[1]];
+				yield result;
+			}
+			yield entry.value;
+		}
 
 		public equals(collection: Collection<Key, Value>): boolean {
 			if (this.size !== collection.size)
@@ -40,7 +66,7 @@ namespace Unproxied {
 			return this.every((currentValue: Value, index: Key): boolean => collection.exists(index, currentValue));
 		}
 
-		public exists(key: Key, value: Value): boolean { return super.has(key) && super.get(key) === value; }
+		public exists(key: Key, value: Value): boolean { return this.has(key) && this.get(key) === value; }
 		public every(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): boolean { return this.forTestShortcut(callback, true, thisArg); }
 
 		public filter(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): Collection<Key, Value> {
@@ -72,24 +98,22 @@ namespace Unproxied {
 		public findKey(property: string, value: any): Key | number;
 		public findKey(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): Key | number;
 		public findKey(propertyOrCallback: string | Collection.Callback<Key, Value, this, boolean>, valueOrThisArg?: any | Object): Key | number { return this.findItem(propertyOrCallback, valueOrThisArg)[0] || -1; }
-		public first(): Value { return super.values().next().value; }
-		public firstKey(): Key { return super.keys().next().value; }
-
-		public forEach(callback: Collection.Callback<Key, Value, this, void>, thisArg?: Object): void {
-			for (const item of this)
-				callback.call(thisArg, item[1], item[0], this);
-		}
+		public first(): Value { return this.values().next().value; }
+		public firstKey(): Key { return this.keys().next().value; }
+		public forEach(callback: Collection.Callback<Key, Value, this, void>, thisArg?: Object): void { this.collection.forEach(<any>callback, thisArg); }
 
 		private forShortcut(callback: Collection.Callback<Key, Value, this, boolean>, useReverseLogic: boolean = false, thisArg?: Object): Collection.Item<Key, Value> {
-			for (const item of this) {
-				if (callback.call(thisArg, item[1], item[0], this) === !useReverseLogic)
+			for (const item of this)
+				if (callback.call(thisArg, item.value, item.key, this) === !useReverseLogic)
 					return useReverseLogic ? undefined : item;
-			}
 			return useReverseLogic ? [undefined, undefined] : undefined;
 		}
 
 		private forTestShortcut(callback: Collection.Callback<Key, Value, this, boolean>, useReverseLogic: boolean = false, thisArg?: Object): boolean { return Boolean(this.forShortcut(callback, useReverseLogic, thisArg)); }
-		public keyArray(): Array<Key> { return Array.from(super.keys()); } // this should be cached to match the Discord.Collection API
+		public get(key: Key): Value { return this.collection.get(key); }
+		public has(key: Key): boolean { return this.collection.has(key); }
+		public keys(): Iterator<Key> { return this.collection.keys(); }
+		public keyArray(): Array<Key> { return this.cache.keys || (this.cache.keys = Array.from(this.collection.keys())); }
 		public last(): Value { return this.array().slice(-1)[0]; }
 		public lastKey(): Key { return this.keyArray().slice(-1)[0]; }
 
@@ -99,15 +123,8 @@ namespace Unproxied {
 			), new Collection<Key, NewValue>());
 		}
 
-		public async random(): Promise<Value> {
-			const array: Array<Value> = this.array();
-			return array[await Random.integer(array.length)];
-		}
-
-		public async randomKey(): Promise<Key> {
-			const array: Array<Key> = this.keyArray();
-			return array[await Random.integer(array.length)];
-		}
+		public async random(): Promise<Value> { return this.array()[await Random.integer(this.size)]; }
+		public async randomKey(): Promise<Key> { return this.keyArray()[await Random.integer(this.size)]; }
 
 		public reduce<T>(callback: (accumulator: T, element: Value, index: Key, collection: this) => T, initialValue?: T): T {
 			let result: T = initialValue;
@@ -115,42 +132,36 @@ namespace Unproxied {
 			return result;
 		}
 
+		public set(key: Key, value: Value): this {
+			if (this.size !== this.collection.set(key, value).size)
+				this.cache.keys = undefined;
+			this.cache.values = undefined;
+			return this;
+		}
+
 		public some(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): boolean { return this.forTestShortcut(callback, false, thisArg); }
+		public values(): Iterator<Value> { return this.collection.values(); }
+		public [Symbol.iterator](): Iterator<Collection.Item<Key, Value>> { return this.entries(); }
 	}
 
 	export namespace Collection {
 		export type Callback<Key, Value, This extends Collection<Key, Value>, Return> = (element: Value, index: Key, collection: This) => Return;
-		export type Item<Key, Value> = Array<Key | Value> & [Key, Value];
+		export type Item<Key, Value> = Array<Key | Value> & [Key, Value] & { key?: Key, value?: Value };
 
 		export interface Constructor {}
 
-		export interface Like<Key, Value> {
-		}
+		export interface Like<Key, Value> {}
 	}
 }
 
+export type Collection<Key, Value> = Unproxied.Collection<Key, Value>;
 export const Collection: typeof Unproxied.Collection = new Proxy<typeof Unproxied.Collection>(Unproxied.Collection, {
 	construct: <Key, Value>(target: typeof Unproxied.Collection, argumentsList: Array<any>, newTarget: typeof Unproxied.Collection): Unproxied.Collection<Key, Value> => {
 		return new Proxy<Unproxied.Collection<Key, Value>>(new Unproxied.Collection<Key, Value>(argumentsList[0]), {
-			get: (target: Unproxied.Collection<Key, Value>, property: any, receiver: Unproxied.Collection<Key, Value>): any => { return (target.has(property)) ? target.get(property) : target[property]; },
-			has: (target: Unproxied.Collection<Key, Value>, property: any): boolean => { return target.has(property) || target[property]; },
-			set: (target: Unproxied.Collection<Key, Value>, property: any, value: any, receiver: Unproxied.Collection<Key, Value>): boolean => { return Boolean(receiver.set(property, value)); }
+			get: (target: Unproxied.Collection<Key, Value>, property: any, receiver: Unproxied.Collection<Key, Value>): any => 
+				Reflect.apply(target.has, target, Array.of(property)) ? Reflect.apply(target.get, target, Array.of(property)) : Reflect.get(target, property),
+			has: (target: Unproxied.Collection<Key, Value>, property: any): boolean => Reflect.apply(target.has, target, Array.of(property)) || Reflect.has(target, property),
+			set: (target: Unproxied.Collection<Key, Value>, property: any, value: any, receiver: Unproxied.Collection<Key, Value>): boolean => Boolean(Reflect.apply(target.set, target, Array.of(property, value)))
 		});
 	}
 });
-
-const fubar: Unproxied.Collection<string, string> = new Unproxied.Collection<string, string>();
-fubar.set("key1", "vlue1").set("key2", "value2").set("key3", "value3").set("key4", "vlue4").set("key5", "value5").set("key6", "vlue6").set("key7", "value7").set("key8", "value8").set("key9", "value9");
-console.log(fubar);
-
-const bar: Unproxied.Collection<string, string> = Unproxied.Collection.from<string, string>();
-bar["key1"] = "vlue1";
-bar["key2"] = "value2";
-bar["key3"] = "value3";
-bar["key4"] = "vlue4";
-bar["key5"] = "value5";
-bar["key6"] = "vlue6";
-bar["key7"] = "value7";
-bar["key8"] = "value8";
-bar["key9"] = "value9";
-console.log(bar);
