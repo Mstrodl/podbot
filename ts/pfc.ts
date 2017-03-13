@@ -10,17 +10,17 @@ const trigger: string = "!";
 
 Process.send({ name });
 const log: CommandLogger = new CommandLogger("podbot");
-const commands: GenericBot.Command.CommandsObject = {
-	any: { command: (parsedCommand: GenericBot.Command.Parser.ParsedCommand): void => { log.add(parsedCommand).catch(console.error); } },
-	["4chan"]: { default: true },
-	db: { default: true },
-	google: { default: true },
-	ping: { default: true },
-	say: { default: true },
-	test: { default: true }, 
-	topic: { command: (parsedCommand: GenericBot.Command.Parser.ParsedCommand): void => { topic(parsedCommand).catch(console.error); } },
-	uptime: { default: true }
-}
+const commands: GenericBot.Command.Collection = new GenericBot.Command.Collection();
+commands.set("any", { command: (parsedCommand: GenericBot.Command.Parser.ParsedCommand): void => { log.add(parsedCommand).catch(console.error); } })
+	.set("4chan", { default: true })
+	.set("db", { default: true })
+	.set("dp", { alias: "db" })
+	.set("google", { default: true })
+	.set("ping", { default: true })
+	.set("say", { default: true })
+	.set("test", { default: true })
+	.set("topic", { command: (parsedCommand: GenericBot.Command.Parser.ParsedCommand): void => { topic(parsedCommand).catch(console.error); } })
+	.set("uptime", { default: true });
 
 async function login() {
 	const secrets: Crypt.SecretsBot = await Crypt.getSecrets("pfc");

@@ -13,7 +13,7 @@ export class Parser extends Events.EventEmitter implements Parser.Like {
 		this.publishedEvents = new Set<string>(enabledCommands);
 	}
 
-	public hook(message: Discord.Message): void {
+	public parse(message: Discord.Message): void {
 		if (message.author.equals(this.command.bot.client.user))
 			return;
 		else if (!(message.channel instanceof Discord.DMChannel) && !(message.channel instanceof Discord.GroupDMChannel) && !(message.channel instanceof Discord.TextChannel))
@@ -39,7 +39,7 @@ export namespace Parser {
 	export interface Like {
 		readonly command: Command;
 
-		hook(message: Discord.Message): void;
+		parse(message: Discord.Message): void;
 	}
 
 	export interface Options {

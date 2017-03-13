@@ -1,7 +1,21 @@
+import { Collection } from "./Collection";
 import * as Discord from "discord.js";
+import { GenericBot } from "./GenericBot";
 
-export class ReactorCollection extends Map<Reactor.Id, Discord.Message> implements ReactorCollection.Like {
-	public readonly tracked: Map<string, Reactor.Id>;
+export class ReactorCollection implements ReactorCollection.Like {
+	public readonly bot: GenericBot;
+	public readonly tracked: Collection<string, Reactor.Id>;
+
+	constructor(bot: GenericBot) {
+		this.bot = bot;
+		this.tracked = new Collection<string, Reactor.Id>();
+	}
+
+	public react(reaction: Discord.MessageReaction): void {
+		if (reaction.me)
+			return;
+
+	}
 }
 
 export namespace ReactorCollection {
@@ -37,6 +51,6 @@ export namespace Reactor {
 		stop: T;
 	}
 
-	export const collection: Map<Id, Discord.Message>
+	export const collection: Collection<Id, Discord.Message> = new Collection<Id, Discord.Message>();
 	export const emoticons: Emoticons<string> = { prev: "\u{23ee}", next: "\u{23ed}", stop: "\u{1f5d1}" };
 }

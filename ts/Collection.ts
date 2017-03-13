@@ -3,8 +3,8 @@ import * as Random from "./Random";
 //https://discord.js.org/#/docs/main/stable/class/Collection
 
 namespace Unproxied {
-	export class Collection<Key, Value> implements Collection.Like<Key, Value> {
-		public readonly id: Symbol;
+	export class Collection<Key, Value> implements Collection.Like<Key, Value>, Iterable<Collection.Item<Key, Value>> {
+		public readonly id: symbol;
 		private cache: { keys?: Array<Key>, values?: Array<Value> };
 		private readonly collection: Map<Key, Value>;
 
@@ -19,7 +19,7 @@ namespace Unproxied {
 		public get[Symbol.species](): any { return this.constructor; }
 		public get[Symbol.toStringTag](): string { return "Collection"; }
 
-		public array(): Array<Value> { return this.cache.values || (this.cache.values = Array.from(this.collection.values())); }
+		public array(): Array<Value> { return this.cache.values || (this.cache.values = Array.from(this.values())); }
 
 		public clear(): void {
 			this.collection.clear();
@@ -48,8 +48,8 @@ namespace Unproxied {
 			});
 		}
 
-		public *entries(): Iterator<Collection.Item<Key, Value>> {
-			const entries: Iterator<Collection.Item<Key, Value>> = this.collection.entries();
+		public *entries(): IterableIterator<Collection.Item<Key, Value>> {
+			const entries: IterableIterator<Collection.Item<Key, Value>> = this.collection.entries();
 			let entry: IteratorResult<Collection.Item<Key, Value>> = entries.next();
 
 			for (; !entry.done; entry = entries.next()) {
@@ -57,7 +57,6 @@ namespace Unproxied {
 				[result.key, result.value] = [result[0], result[1]];
 				yield result;
 			}
-			yield entry.value;
 		}
 
 		public equals(collection: Collection<Key, Value>): boolean {
@@ -112,8 +111,9 @@ namespace Unproxied {
 		private forTestShortcut(callback: Collection.Callback<Key, Value, this, boolean>, useReverseLogic: boolean = false, thisArg?: Object): boolean { return Boolean(this.forShortcut(callback, useReverseLogic, thisArg)); }
 		public get(key: Key): Value { return this.collection.get(key); }
 		public has(key: Key): boolean { return this.collection.has(key); }
-		public keys(): Iterator<Key> { return this.collection.keys(); }
-		public keyArray(): Array<Key> { return this.cache.keys || (this.cache.keys = Array.from(this.collection.keys())); }
+		public keys(): IterableIterator<Key> { return this.collection.keys(); }
+		public keyArray(): Array<Key> { return this.cache.keys || (this.cache.keys = Array.from(this.keys())); }
+		public keySet(): Set<Key> { return new Set<Key>(this.keys()); }
 		public last(): Value { return this.array().slice(-1)[0]; }
 		public lastKey(): Key { return this.keyArray().slice(-1)[0]; }
 
@@ -140,17 +140,60 @@ namespace Unproxied {
 		}
 
 		public some(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): boolean { return this.forTestShortcut(callback, false, thisArg); }
-		public values(): Iterator<Value> { return this.collection.values(); }
-		public [Symbol.iterator](): Iterator<Collection.Item<Key, Value>> { return this.entries(); }
+		public valueArray(): Array<Value> { return this.array(); }
+		public values(): IterableIterator<Value> { return this.collection.values(); }
+		public valueSet(): Set<Value> { return new Set<Value>(this.values()); }
+		public [Symbol.iterator](): IterableIterator<Collection.Item<Key, Value>> { return this.entries(); }
 	}
 
 	export namespace Collection {
-		export type Callback<Key, Value, This extends Collection<Key, Value>, Return> = (element: Value, index: Key, collection: This) => Return;
+		export type Callback<Key, Value, This extends Like<Key, Value>, Return> = (element: Value, index: Key, collection: This) => Return;
 		export type Item<Key, Value> = Array<Key | Value> & [Key, Value] & { key?: Key, value?: Value };
 
-		export interface Constructor {}
+		export interface Constructor { new<Key, Value>(iterable?: Iterable<[Key, Value]>); }
 
-		export interface Like<Key, Value> {}
+		export interface Like<Key, Value> {
+			readonly id: symbol;
+			readonly length: number;
+			readonly size: number;
+
+			array(): Array<Value>;
+			clear(): void;
+			clone(): Collection<Key, Value>;
+			concat(...collections: Array<Collection<Key, Value>>): Collection<Key, Value>;
+			delete(key: Key): boolean;
+			deleteAll(): void;
+			entries(): IterableIterator<Collection.Item<Key, Value>>;
+			equals(collection: Collection<Key, Value>): boolean;
+			exists(key: Key, value: Value): boolean;
+			every(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): boolean;
+			filter(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): Collection<Key, Value>;
+			filterArray(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): Array<Value>;
+			find(property: string, value: any): Value;
+			find(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): Value;
+			findAll(property: string, value: any): Array<Value>;
+			findKey(property: string, value: any): Key | number;
+			findKey(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): Key | number;
+			first(): Value;
+			firstKey(): Key;
+			forEach(callback: Collection.Callback<Key, Value, this, void>, thisArg?: Object): void;
+			get(key: Key): Value;
+			has(key: Key): boolean;
+			keys(): IterableIterator<Key>;
+			keyArray(): Array<Key>;
+			keySet(): Set<Key>;
+			last(): Value;
+			lastKey(): Key;
+			map<NewValue>(callback: Collection.Callback<Key, Value, this, NewValue>, thisArg?: Object): Collection<Key, NewValue>;
+			random(): Promise<Value>;
+			randomKey(): Promise<Key>;
+			reduce<T>(callback: (accumulator: T, element: Value, index: Key, collection: this) => T, initialValue?: T): T;
+			set(key: Key, value: Value): this;
+			some(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): boolean;
+			valueArray(): Array<Value>;
+			values(): IterableIterator<Value>;
+			valueSet(): Set<Value>;
+		}
 	}
 }
 

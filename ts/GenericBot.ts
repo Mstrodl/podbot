@@ -1,11 +1,12 @@
 import { Command as GenericBotCommand } from "./Command";
 import * as Discord from "discord.js";
+import { Reactor } from "./Reactor";
 
 export class GenericBot implements GenericBot.Like {
 	public readonly client: Discord.Client;
 	public readonly command: GenericBot.Command;
 	public readonly name: string;
-	private readonly token: string;
+	private token: string;
 
 	constructor(name: string, token: string, { commands, onReady, trigger }: GenericBot.Options) {
 		console.log("starting up...");
@@ -16,12 +17,14 @@ export class GenericBot implements GenericBot.Like {
 	public clientConfigure(onReady: () => void = this.onReady): this {
 		this.client.on("ready", (): void => onReady.call(this));
 		this.client.on("reconnecting", (): void => this.onReconnecting.call(this));
-		this.client.on("message", (message: Discord.Message): any => this.command.parser.hook.call(this.command.parser, message));
+		this.client.on("message", (message: Discord.Message): any => this.command.parser.parse.call(this.command.parser, message));
 		return this;
 	}
 
 	public clientLogin(token: string = this.token): this {
 		this.client.login(token);
+		this.token = undefined;
+		delete this.token;
 		return this;
 	}
 
