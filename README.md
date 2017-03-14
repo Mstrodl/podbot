@@ -23,6 +23,8 @@ I created this bot initially just to provide some basic commands for the [PFC Di
 	<dd>Searches <a href="https://www.google.com/" rel="external">Google</a> and returns the top three results based on the <code><var>search</var></code> argument.</dd>
 	<code>ping</code>
 	<dd>Will show the current and average ping times to the bot's server.  The current ping time is based on the timestamp value attached to the command's message and the server's timestamp.  The average is directly from the discord.js API.  This command can only be used either via DM or in a channel which contains the word &quot;bot&quot; in its name.</dd>
+	<code>regind <var>message</var></code>
+	<dd>Will force the bot to say <var>message</var> using regional indicator emoticons in the current channel.</dd>
 	<code>say <var>message</var></code>
 	<dd>Will force the bot to say <var>message</var> in the current channel.  This is exposed primarily for testing and likely won't stay that way for long.</dd>
 	<code>uptime</code>
