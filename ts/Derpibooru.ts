@@ -60,7 +60,6 @@ export class NoponyError extends Error {}
 export async function random(): Promise<Response.Image> {
 	const images: Response.Random = await GenericApi.Get.json<Response.Random>(url.setPathname(pathname.random), query.random);
 	return (await Random.shuffle<Response.Image>(images.images))[0];
-	//return images.images[await Random.integer(images.images.length)];
 }
 
 export async function search(search: string): Promise<Response.Image> {
@@ -74,8 +73,8 @@ export async function search(search: string): Promise<Response.Image> {
 
 	if (pageNumber > 1)
 		images = await GenericApi.Get.json<Response.Search>(searchUrl, searchQuery.set("page", pageNumber));
-	return (await Random.shuffle<Response.Image>(images.search))[0];
-	//return images.search[await Random.integer(images.search.length)];
+	const shuffled: Array<Response.Image> = await Random.shuffle<Response.Image>(images.search);
+	return shuffled[0];
 }
 
 export namespace Response {

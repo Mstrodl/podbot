@@ -123,6 +123,11 @@ export namespace Defaults {
 		return null;
 	}
 
+	// export async function regind(parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> {
+	// 	const start: number = 0x1f170;
+	// 	return say(parsedCommand, Array.prototype.reduce.call(parsedCommand.args.toLowerCase(), (result: string, char: string, index: number): string => result + ((char.charCodeAt(0) >= 97 && char.charCodeAt(0) <= 122) ? String.fromCodePoint(char.charCodeAt(0) - 97 + start) : char), ""));
+	// }
+
 	export async function say(parsedCommand: GenericBot.Command.Parser.ParsedCommand, message?: string): Promise<Discord.Message> { return <Promise<Discord.Message>>parsedCommand.channel.send(message ? message : parsedCommand.args); }
 
 	export async function sayEmbed(parsedCommand: GenericBot.Command.Parser.ParsedCommand, options: SayEmbedOptions): Promise<Discord.Message> {
