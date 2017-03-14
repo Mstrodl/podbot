@@ -2,10 +2,11 @@ import * as Buffer from "buffer";
 import { Collection } from "./Collection";
 import * as Crypto from "crypto";
 
+// upperLimit is NON-INCLUSIVE
 export async function integer(upperLimit: number): Promise<number> {
-	if (upperLimit <= 0)
-		return upperLimit;
-	const numBytes: number = (upperLimit === 1) ? 1 : Math.ceil(Math.log2(upperLimit) / 8);
+	if (upperLimit <= 1)
+		return 0;
+	const numBytes: number = Math.ceil(Math.log2(upperLimit) / 8);
 	const randomBytes: string = await new Promise<string>((resolve: (value: string | PromiseLike<string>) => void, reject: (reason?: any) => void): void => Crypto.randomBytes(numBytes, (err: Error, buff: Buffer): void => {
 		if (err)
 			reject(err);
@@ -38,7 +39,7 @@ async function shuffleArray<Value>(array: Array<Value>): Promise<Array<Value>> {
 	if (array.length <= 1)
 		return array;
 	return Promise.all(await array.reduce<Promise<Array<Promise<Value>>>>(async (final: Promise<Array<Promise<Value>>>, value: Value, i: number): Promise<Array<Promise<Value>>> => {
-		const j: number = await integer(i);
+		const j: number = await integer(i + 1);
 		const result: Array<Promise<Value>> = await final;
 
 		if (i !== j)

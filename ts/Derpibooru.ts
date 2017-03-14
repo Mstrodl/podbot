@@ -9,10 +9,16 @@ export const favIconUrl: Url = url.setPathname(new Path("/favicon.ico"));
 const pathname: { search: Path, random: Path } = { search: new Path("/search.json"), random: new Path("/images.json") };
 const query: { search: Query, random: Query } = { search: new Query({ filter_id }), random: new Query({ filter_id, random_image: true }) };
 
+export class NoponyError extends Error {}
+
 export class Derpibooru implements Derpibooru.Like {
 	public image: Derpibooru.Image;
 	public readonly query: Query;
 	public readonly type: "random" | "search";
+
+	constructor(query: Query, type: "random" | "search") {
+		
+	}
 }
 
 export namespace Derpibooru {
@@ -53,10 +59,6 @@ export namespace Derpibooru {
 	}
 }
 
-
-
-export class NoponyError extends Error {}
-
 export async function random(): Promise<Response.Image> {
 	const images: Response.Random = await GenericApi.Get.json<Response.Random>(url.setPathname(pathname.random), query.random);
 	return (await Random.shuffle<Response.Image>(images.images))[0];
@@ -69,11 +71,16 @@ export async function search(search: string): Promise<Response.Image> {
 
 	if (images.total === 0)
 		throw new NoponyError("No images were found for `" + search + "`");
+	console.log("Found " + images.total.toString() + " for search " + search);
 	const pageNumber: number = await Random.integer(Math.ceil(images.total / 15)) + 1;
+	console.log("Choosing page number " + pageNumber.toString());
 
 	if (pageNumber > 1)
 		images = await GenericApi.Get.json<Response.Search>(searchUrl, searchQuery.set("page", pageNumber));
 	const shuffled: Array<Response.Image> = await Random.shuffle<Response.Image>(images.search);
+	
+	if (shuffled[0] === undefined)
+		console.log(shuffled);
 	return shuffled[0];
 }
 

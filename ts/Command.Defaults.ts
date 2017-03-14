@@ -1,3 +1,4 @@
+import { Collection } from "./Collection";
 import { DateFormatted } from "./DateFormatted";
 import * as Derpibooru from "./Derpibooru";
 import * as Discord from "discord.js";
@@ -11,6 +12,11 @@ export class Defaults {
 }
 
 export namespace Defaults {
+	const regionalIndicators: Collection<string, string> = Array.prototype.reduce.call(String("abcdefghijklmnopqrstuvwxyz"), 
+		(result: Collection<string, string>, value: string): Collection<string, string> => result.set(value, ":regional_indicator_" + value + ": "), 
+		new Collection<string, string>())
+		.set(" ", "  ").set("1", ":one: ").set("2", ":two: ").set("3", ":three: ").set("4", ":four: ").set("5", ":five: ").set("6", ":six: ").set("7", ":seven: ").set("8", ":eight: ").set("9", ":nine: ");
+
 	export interface SayEmbedOptions {
 		author?: Discord.User;
 		color?: number;
@@ -123,10 +129,9 @@ export namespace Defaults {
 		return null;
 	}
 
-	// export async function regind(parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> {
-	// 	const start: number = 0x1f170;
-	// 	return say(parsedCommand, Array.prototype.reduce.call(parsedCommand.args.toLowerCase(), (result: string, char: string, index: number): string => result + ((char.charCodeAt(0) >= 97 && char.charCodeAt(0) <= 122) ? String.fromCodePoint(char.charCodeAt(0) - 97 + start) : char), ""));
-	// }
+	export async function regind(parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> {
+		return say(parsedCommand, Array.prototype.reduce.call(parsedCommand.args.toLowerCase(), (result: string, char: string): string => result + (regionalIndicators.has(char) ? regionalIndicators[char] : char), ""));
+	}
 
 	export async function say(parsedCommand: GenericBot.Command.Parser.ParsedCommand, message?: string): Promise<Discord.Message> { return <Promise<Discord.Message>>parsedCommand.channel.send(message ? message : parsedCommand.args); }
 
