@@ -87,7 +87,7 @@ export class Derpibooru implements Derpibooru.Like, IterableIterator<RichEmbed> 
 		
 		if (typeof shuffled[0] === "undefined")
 			console.log(shuffled);
-		this.images = images.search;
+		this.images = shuffled;
 	}
 
 	public *[Symbol.iterator](): IterableIterator<RichEmbed> {
@@ -141,72 +141,3 @@ export namespace Derpibooru {
 		export function formatImageUrl(image: Image): string { return Url.parse(image.image, true).setProtocol("https:").toString(); }
 	}
 }
-
-export async function random(): Promise<Response.Image> {
-	const images: Response.Random = await GenericApi.Get.json<Response.Random>(url.setPathname(pathname.random), query.random);
-	return (await Random.shuffle<Response.Image>(images.images))[0];
-}
-
-export async function search(search: string): Promise<Response.Image> {
-	const searchQuery: Query = query.search.set("q", search);
-	const searchUrl: Url = url.setPathname(pathname.search);
-	let images: Response.Search = await GenericApi.Get.json<Response.Search>(searchUrl, searchQuery);
-
-	if (images.total === 0)
-		throw new NoponyError("No images were found for `" + search + "`");
-	console.log("Found " + images.total.toString() + " for search " + search);
-	const pageNumber: number = await Random.integer(Math.ceil(images.total / 15)) + 1;
-	console.log("Choosing page number " + pageNumber.toString());
-
-	if (pageNumber > 1)
-		images = await GenericApi.Get.json<Response.Search>(searchUrl, searchQuery.set("page", pageNumber));
-	const shuffled: Array<Response.Image> = await Random.shuffle<Response.Image>(images.search);
-	
-	if (shuffled[0] === undefined)
-		console.log(shuffled);
-	return shuffled[0];
-}
-
-export namespace Response {
-	export interface Image {
-		downvotes: number;
-		faves: number;
-		file_name: string;
-		id: string;
-		image: string;
-		score: number;
-		tags: string;
-		uploader: string;
-		upvotes: number;
-	}
-
-	export interface Random { images: Array<Image>; }
-
-	export interface Search {
-		search: Array<Image>;
-		total: number;
-	}
-
-	export function formatImagePageUrl(image: Image): string { return url.setPathname(new Path("/" + image.id)).toString(); }
-	export function formatImageUrl(image: Image): string { return Url.parse(image.image, true).setProtocol("https:").toString(); }
-}
-
-	// export async function db(parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> {
-	// 	try {
-	// 		const result: Derpibooru.Response.Image = (parsedCommand.args === "" || parsedCommand.args === "random") ? await Derpibooru.random() : await Derpibooru.search(parsedCommand.args);
-	// 		const imagePageUrl: string = Derpibooru.Response.formatImagePageUrl(result);
-	// 		return sayEmbed(parsedCommand, {
-	// 			description: result.file_name + " uploaded by " + result.uploader,
-	// 			footer: result.tags, 
-	// 			footerImageUrl: Derpibooru.favIconUrl.toString(), 
-	// 			image: Derpibooru.Response.formatImageUrl(result), 
-	// 			title: imagePageUrl, 
-	// 			url: imagePageUrl
-	// 		});
-	// 	} catch (e) {
-	// 		if (e instanceof Derpibooru.NoponyError)
-	// 			return say(parsedCommand, e.message);
-	// 		else
-	// 			throw e;
-	// 	}
-	// }
