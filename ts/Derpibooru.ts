@@ -8,7 +8,6 @@ import { RichEmbed } from "./RichEmbed";
 
 const filter_id: number = 41048;
 const url: Url = new Url("https://derpibooru.org");
-export const favIconUrl: Url = url.setPathname(new Path("/favicon.ico"));
 const pathname: { search: Path, random: Path } = { search: new Path("/search.json"), random: new Path("/images.json") };
 const query: { search: Query, random: Query } = { search: new Query({ filter_id }), random: new Query({ filter_id, random_image: true }) };
 
@@ -71,11 +70,16 @@ export class Derpibooru implements Derpibooru.Like, IterableIterator<RichEmbed> 
 	}
 
 	public async search() {
+		this.query.delete("page");
 		let images: Derpibooru.Response.Search = await this.getImages<Derpibooru.Response.Search>();
 
 		if (images.total === 0)
 			throw new Derpibooru.NoponyError("No images were found for `" + this.userInput + "`");
 		console.log("Found " + images.total.toString() + " for search " + this.userInput);
+		console.log( { total: images.total, length: images.search.length });
+
+		if (images.search.length === 0 && images.total > 0)
+			console.log(images), console.log({ url: this.url, query: this.query });
 		const pageNumber: number = (images.total > images.search.length) ? (await Random.integer(Math.ceil(images.total / images.search.length)) + 1) : 1;
 		console.log("Choosing page number " + pageNumber.toString());
 
