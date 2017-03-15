@@ -4,14 +4,14 @@ import * as Random from "./Random";
 
 namespace Unproxied {
 	export class Collection<Key, Value> implements Collection.Like<Key, Value>, Iterable<Collection.Item<Key, Value>> {
+		public readonly accessor: this;
 		public readonly id: symbol;
 		private cache: { keys?: Array<Key>, values?: Array<Value> };
 		private readonly collection: Map<Key, Value>;
 
 		constructor(iterable?: Iterable<[Key, Value]>) {
-			this.cache = {};
-			this.collection = new Map<Key, Value>(iterable);
-			this.id = Symbol();
+			[this.accessor, this.cache, this.collection, this.id] = [this, {}, new Map<Key, Value>(iterable), Symbol()];
+			Object.defineProperty(this, "accessor", { enumerable: false });
 		}
 
 		public get length(): number { return this.size; }
@@ -62,10 +62,10 @@ namespace Unproxied {
 		public equals(collection: Collection<Key, Value>): boolean {
 			if (this.size !== collection.size)
 				return false;
-			return this.every((currentValue: Value, index: Key): boolean => collection.exists(index, currentValue));
+			return this.every((currentValue: Value, index: Key): boolean => collection.has(index) && collection.get(index) === currentValue);
 		}
 
-		public exists(key: Key, value: Value): boolean { return this.has(key) && this.get(key) === value; }
+		public exists(property: string, value: any): boolean { return this.forTestShortcut((element: Value): boolean => element[property] === value); }
 		public every(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): boolean { return this.forTestShortcut(callback, true, thisArg); }
 
 		public filter(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): Collection<Key, Value> {
@@ -153,6 +153,7 @@ namespace Unproxied {
 		export interface Constructor { new<Key, Value>(iterable?: Iterable<[Key, Value]>); }
 
 		export interface Like<Key, Value> {
+			readonly accessor: this;
 			readonly id: symbol;
 			readonly length: number;
 			readonly size: number;
@@ -165,7 +166,7 @@ namespace Unproxied {
 			deleteAll(): void;
 			entries(): IterableIterator<Collection.Item<Key, Value>>;
 			equals(collection: Collection<Key, Value>): boolean;
-			exists(key: Key, value: Value): boolean;
+			exists(property: string, value: any): boolean;
 			every(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): boolean;
 			filter(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): Collection<Key, Value>;
 			filterArray(callback: Collection.Callback<Key, Value, this, boolean>, thisArg?: Object): Array<Value>;

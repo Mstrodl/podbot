@@ -75,13 +75,7 @@ export class Derpibooru implements Derpibooru.Like, IterableIterator<RichEmbed> 
 
 		if (images.total === 0)
 			throw new Derpibooru.NoponyError("No images were found for `" + this.userInput + "`");
-		console.log("Found " + images.total.toString() + " for search " + this.userInput);
-		console.log( { total: images.total, length: images.search.length });
-
-		if (images.search.length === 0 && images.total > 0)
-			console.log(images), console.log({ url: this.url, query: this.query });
 		const pageNumber: number = (images.total > images.search.length) ? (await Random.integer(Math.ceil(images.total / images.search.length)) + 1) : 1;
-		console.log("Choosing page number " + pageNumber.toString());
 
 		if (pageNumber > 1) {
 			this.query.set("page", pageNumber);

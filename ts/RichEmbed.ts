@@ -3,7 +3,7 @@ import { GenericBot } from "./GenericBot";
 
 export class RichEmbed extends Discord.RichEmbed implements RichEmbed.Like {
 	public readonly channel: GenericBot.Command.TextBasedChannel;
-	public readonly message: Promise<Discord.Message>;
+	public message: Discord.Message;
 
 	constructor(parsedCommand: GenericBot.Command.Parser.ParsedCommand, options: Discord.RichEmbedOptions = {}) {
 		super(Object.assign({
@@ -15,14 +15,13 @@ export class RichEmbed extends Discord.RichEmbed implements RichEmbed.Like {
 		this.channel = parsedCommand.channel;
 	}
 
-	public async send(): Promise<Discord.Message> { return this.channel.sendEmbed(this, undefined, { split: true }); }
+	public async send(): Promise<Discord.Message> { return this.message = await this.channel.sendEmbed(this, undefined, { split: true }); }
 
 	public async update(options: Discord.RichEmbedOptions = {}): Promise<Discord.Message> {
 		for (const option in options)
 			if (RichEmbed.options.has(option))
 				super[option] = options[option];
-		const message: Discord.Message = await this.message;
-		return message.edit(undefined, { embed: this });
+		return this.message = await this.message.edit(undefined, { embed: this });
 	}
 }
 

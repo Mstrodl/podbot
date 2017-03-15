@@ -61,5 +61,5 @@ export namespace Command {
 		trigger: string;
 	}
 
-	export class Collection extends CommandCollection<string, GenericBot.Command.HookOptions> {}
+	export class Collection extends CommandCollection<string, HookOptions> {}
 }
