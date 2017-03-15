@@ -1,6 +1,6 @@
 import { Collection } from "./Collection";
 import { DateFormatted } from "./DateFormatted";
-import * as Derpibooru from "./Derpibooru";
+import { Derpibooru } from "./Derpibooru";
 import * as Discord from "discord.js";
 import * as FourChan from "./FourChan";
 import { GenericBot } from "./GenericBot";
@@ -47,23 +47,26 @@ export namespace Defaults {
 	}
 
 	export async function db(parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> {
-		try {
-			const result: Derpibooru.Response.Image = (parsedCommand.args === "" || parsedCommand.args === "random") ? await Derpibooru.random() : await Derpibooru.search(parsedCommand.args);
-			const imagePageUrl: string = Derpibooru.Response.formatImagePageUrl(result);
-			return sayEmbed(parsedCommand, {
-				description: result.file_name + " uploaded by " + result.uploader,
-				footer: result.tags, 
-				footerImageUrl: Derpibooru.favIconUrl.toString(), 
-				image: Derpibooru.Response.formatImageUrl(result), 
-				title: imagePageUrl, 
-				url: imagePageUrl
-			});
-		} catch (e) {
-			if (e instanceof Derpibooru.NoponyError)
-				return say(parsedCommand, e.message);
-			else
-				throw e;
-		}
+		const result: Derpibooru = new Derpibooru(parsedCommand);
+		await result.fetch();
+		return result.next().value.send();
+		// try {
+		// 	const result: Derpibooru.Response.Image = (parsedCommand.args === "" || parsedCommand.args === "random") ? await Derpibooru.random() : await Derpibooru.search(parsedCommand.args);
+		// 	const imagePageUrl: string = Derpibooru.Response.formatImagePageUrl(result);
+		// 	return sayEmbed(parsedCommand, {
+		// 		description: result.file_name + " uploaded by " + result.uploader,
+		// 		footer: result.tags, 
+		// 		footerImageUrl: Derpibooru.favIconUrl.toString(), 
+		// 		image: Derpibooru.Response.formatImageUrl(result), 
+		// 		title: imagePageUrl, 
+		// 		url: imagePageUrl
+		// 	});
+		// } catch (e) {
+		// 	if (e instanceof Derpibooru.NoponyError)
+		// 		return say(parsedCommand, e.message);
+		// 	else
+		// 		throw e;
+		// }
 	}
 
 	export async function fourChan(parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> {

@@ -34,10 +34,15 @@ export class Parser extends Events.EventEmitter implements Parser.Like {
 }
 
 export namespace Parser {
-	export interface Constructor { new(command: Command, options: Options): Parser; }
+	export interface Constructor {
+		prototype: Like;
+
+		new?(command: Command, options: Options): Like;
+	}
 
 	export interface Like {
 		readonly command: Command;
+		constructor: Constructor;
 
 		parse(message: Discord.Message): void;
 	}
