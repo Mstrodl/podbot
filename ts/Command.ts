@@ -3,6 +3,7 @@ import { Defaults as CommandDefaults } from "./Command.Defaults";
 import { Parser as CommandParser } from "./Command.Parser";
 import * as Discord from "discord.js";
 import { GenericBot } from "./GenericBot";
+import { RichEmbed } from "./RichEmbed";
 
 export class Command implements Command.Like {
 	public readonly bot: GenericBot;
@@ -39,6 +40,11 @@ export namespace Command {
 	export const defaults: Set<string> = new Set<string>(Array.of("4chan", "db", "google", "ping", "say", "topic", "uptime"));
 
 	export type TextBasedChannel = Discord.DMChannel | Discord.GroupDMChannel | Discord.TextChannel;
+
+	export interface Generic {
+		// bot: GenericBot;
+		// channel: GenericBot.Command.TextBasedChannel;
+	}
 
 	export interface HookOptions {
 		alias?: string;

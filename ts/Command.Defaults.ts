@@ -6,6 +6,7 @@ import * as FourChan from "./FourChan";
 import { GenericBot } from "./GenericBot";
 import * as Google from "./Google";
 import { Query } from "./Url";
+import { RichEmbed as NewRichEmbed } from "./RichEmbed";
 
 export class Defaults {
 	public static async ["4chan"](parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> { return Defaults.fourChan(parsedCommand); }
@@ -47,16 +48,18 @@ export namespace Defaults {
 	}
 
 	export async function db(parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> {
-		const result: Derpibooru = new Derpibooru(parsedCommand);
+		const command: Derpibooru = new Derpibooru(parsedCommand);
 
-		try { await result.fetch(); }
+		try { await command.fetch(); }
 		catch (err) {
 			if (err instanceof Derpibooru.NoponyError)
 				return say(parsedCommand, err.message);
 			else
 				throw err;
 		}
-		return result.next().value.send();
+		const embed: NewRichEmbed = await command.send();
+		parsedCommand.bot.reactor.add(embed);
+		return embed.message;
 	}
 
 	export async function fourChan(parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> {

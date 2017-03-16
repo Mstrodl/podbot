@@ -4,6 +4,7 @@ import { GenericApi } from "./GenericApi";
 import { GenericBot } from "./GenericBot";
 import { Path, Query, Url } from "./Url";
 import * as Random from "./Random";
+import { Reactor } from "./Reactor";
 import { RichEmbed } from "./RichEmbed";
 
 const filter_id: number = 41048;
@@ -13,13 +14,11 @@ const query: { search: Query, random: Query } = { search: new Query({ filter_id 
 
 export class NoponyError extends Error {}
 
-export class Derpibooru implements Derpibooru.Like, IterableIterator<RichEmbed> {
+export class Derpibooru implements Derpibooru.Like, Reactor.Command {
+	private _embeds: Array<Discord.RichEmbedOptions>;
 	private _images: Array<Derpibooru.Image>;
 	public readonly bot: GenericBot;
 	public readonly channel: GenericBot.Command.TextBasedChannel;
-	public embed: RichEmbed;
-	private iterator: Iterator<RichEmbed>;
-	public readonly message: Discord.Message;
 	public readonly parsedCommand: GenericBot.Command.Parser.ParsedCommand;
 	public readonly query: Query;
 	public readonly type: "random" | "search";
@@ -32,6 +31,21 @@ export class Derpibooru implements Derpibooru.Like, IterableIterator<RichEmbed> 
 		else
 			[this.query, this.type, this.url, this.userInput] = [query.search.set("q", parsedCommand.args), "search", url.setPathname(pathname.search), parsedCommand.args];
 		this.parsedCommand = parsedCommand;
+	}
+
+	public get embeds(): Array<Discord.RichEmbedOptions> {
+		if (this._embeds)
+			return this._embeds;
+		return this._embeds = this.images.reduce<Array<Discord.RichEmbedOptions>>((embeds: Array<Discord.RichEmbedOptions>, image: Derpibooru.Image): Array<Discord.RichEmbedOptions> => {
+			embeds.push({
+				description: image.file_name + " uploaded by " + image.uploader,
+				footer: { icon_url: Derpibooru.favIconUrl.toString(), text: image.tags },
+				image: { url: image.imageUrl },
+				title: image.pageUrl,
+				url: image.pageUrl }
+			);
+			return embeds;
+		}, new Array<Discord.RichEmbedOptions>());
 	}
 
 	public get images(): Array<Derpibooru.Image> { return this._images; }
@@ -47,22 +61,10 @@ export class Derpibooru implements Derpibooru.Like, IterableIterator<RichEmbed> 
 				"pageUrl": { get: function(): string { return Derpibooru.Response.formatImagePageUrl(this); } }
 			});
 		});
-		this.iterator = this[Symbol.iterator]();
-	}
-
-	public setEmbed(image: Derpibooru.Image): this {
-		if (typeof image === "undefined")
-			this.embed = undefined;
-		else
-			this.embed = new RichEmbed(this.parsedCommand, {
-				description: image.file_name + " uploaded by " + image.uploader, footer: { icon_url: Derpibooru.favIconUrl.toString(), text: image.tags }, image: { url: image.imageUrl }, title: image.pageUrl, url: image.pageUrl
-			});
-		return this;
 	}
 
 	public async fetch() { (this.type === "search") ? await this.search() : await this.random(); }
 	private async getImages<T extends Derpibooru.Response.Random | Derpibooru.Response.Search>(): Promise<T> { return GenericApi.Get.json<T>(this.url, this.query); }
-	public next(): IteratorResult<RichEmbed> { return this.iterator.next(); }
 
 	public async random() {
 		const images: Derpibooru.Response.Random = await this.getImages<Derpibooru.Response.Random>();
@@ -88,9 +90,10 @@ export class Derpibooru implements Derpibooru.Like, IterableIterator<RichEmbed> 
 		this.images = shuffled;
 	}
 
-	public *[Symbol.iterator](): IterableIterator<RichEmbed> {
-		for (const image of this.images)
-			yield this.setEmbed(image).embed;
+	public async send(): Promise<RichEmbed> {
+		const embed: RichEmbed = new RichEmbed(this.parsedCommand, this.embeds);
+		await embed.send();
+		return embed;
 	}
 }
 
@@ -103,9 +106,6 @@ export namespace Derpibooru {
 	}
 
 	export interface Like {
-		readonly bot: GenericBot;
-		readonly channel?: GenericBot.Command.TextBasedChannel;
-		readonly message: Discord.Message;
 		readonly query: Query;
 		readonly url: Url;
 		readonly userInput?: string;
