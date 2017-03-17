@@ -19,7 +19,6 @@ commands.set("any", { command: (parsedCommand: GenericBot.Command.Parser.ParsedC
 	.set("ping", { default: true })
 	.set("regind", { default: true })
 	.set("say", { default: true })
-	.set("test", { default: true })
 	.set("topic", { command: (parsedCommand: GenericBot.Command.Parser.ParsedCommand): void => { topic(parsedCommand).catch(console.error); } })
 	.set("uptime", { default: true });
 

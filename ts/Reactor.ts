@@ -4,23 +4,10 @@ import { GenericBot } from "./GenericBot";
 import { RichEmbed } from "./RichEmbed";
 
 export class Reactor implements Reactor.Like {
+	public readonly bot: GenericBot;
 	public readonly channels: Collection<string, Channel>;
 
-	constructor() { this.channels = new Collection<string, Channel>(); }
-
-	public onMessageDelete(message: Discord.Message): void {
-		if (!message || !this.channels.has(message.channel.id) || !this.channels.get(message.channel.id).has(message.id))
-			return;
-		this.channels.get(message.channel.id).delete(message.id);
-	}
-
-	public onMessageDeleteBulk(messages: Discord.Collection<string, Discord.Message>): void {}
-
-	public onMessageReaction(reaction: Discord.MessageReaction, user?: Discord.User): void {
-		if (!reaction || reaction.me || !reaction.message || !this.channels.has(reaction.message.channel.id) || !this.channels.get(reaction.message.channel.id).has(reaction.message.id))
-			return;
-		this.channels.get(reaction.message.channel.id).get(reaction.message.id).embed.next().update().catch(console.error);
-	}
+	constructor(bot: GenericBot) { [this.bot, this.channels] = [bot, new Collection<string, Channel>()]; }
 
 	public add(embed: RichEmbed): this {
 		const key: string = embed.message.channel.id;
@@ -30,6 +17,44 @@ export class Reactor implements Reactor.Like {
 		this.channels.get(key).set(embed);
 		return this;
 	}
+
+	public onMessageDelete(message: Discord.Message): void {
+		if (!message || !this.channels.has(message.channel.id) || !this.channels.get(message.channel.id).has(message.id))
+			return;
+		this.channels.get(message.channel.id).delete(message.id);
+	}
+
+	public onMessageDeleteBulk(messages: Discord.Collection<string, Discord.Message>): void {
+		if (!messages)
+			return;
+		messages.array().forEach((message: Discord.Message): void => this.onMessageDelete(message));
+	}
+
+	private async onMessageReaction(type: "add" | "remove", reaction: Discord.MessageReaction, user?: Discord.User): Promise<Discord.Message> {
+		if (!reaction || !reaction.message || !this.channels.has(reaction.message.channel.id) || !this.channels.get(reaction.message.channel.id).has(reaction.message.id) || !Message.emoticons.some((emoticon: string): boolean => emoticon === reaction.emoji.name))
+			return undefined;
+		const message: Message = this.channels.get(reaction.message.channel.id).get(reaction.message.id);
+		const users: Discord.Collection<string, Discord.User> = await reaction.fetchUsers();
+
+		if (!message.reactionsEnabled || type === "add" && reaction.users.array().length === 1)
+			return undefined;
+		let result: Discord.Message;
+
+		switch (reaction.emoji.name) {
+			case Message.emoticons.get("next"):
+				result = await message.embed.next().update();
+				break;
+			case Message.emoticons.get("prev"):
+				result = await message.embed.prev().update();
+				break;
+			case Message.emoticons.get("stop"):
+				return message.embed.message.delete();
+		}
+		return result;
+	}
+
+	public onMessageReactionAdd(reaction: Discord.MessageReaction, user?: Discord.User): void { this.onMessageReaction("add", reaction, user).catch(console.error); }
+	public onMessageReactionRemove(reaction: Discord.MessageReaction, user?: Discord.User): void { this.onMessageReaction("remove", reaction, user).catch(console.error); }
 }
 
 export namespace Reactor {
@@ -56,10 +81,18 @@ export class Channel implements Channel.Like {
 		[this.channelId, this.messages] = [channelId, new Collection<string, Message>()];
 	}
 
-	public delete(channelId: string): boolean { return this.messages.delete(channelId); }
-	public get(channelId: string): Message { return this.messages.get(channelId); }
-	public has(channelId: string): boolean { return this.messages.has(channelId); }
-	private messageDestructor: (key: string) => void = (key: string): void => { this.messages.delete(key); }
+	public delete(messageId: string): boolean {
+		this.messages.get(messageId).clearDestruct();
+		return this.messages.delete(messageId);
+	}
+
+	public get(messageId: string): Message { return this.messages.get(messageId); }
+	public has(messageId: string): boolean { return this.messages.has(messageId); }
+
+	private messageDestructor: (key: string) => void = (key: string): void => {
+		this.messages.get(key).clearReactions();
+		this.messages.delete(key);
+	}
 
 	public set(embed: RichEmbed): this {
 		const key: string = embed.message.id;
@@ -84,10 +117,11 @@ export namespace Channel {
 export class Message implements Message.Like {
 	public readonly embed: RichEmbed;
 	public reactions: Collection<string, Discord.MessageReaction>;
+	public reactionsEnabled: boolean;
 	public timer: NodeJS.Timer;
 
 	constructor(embed: RichEmbed) {
-		this.embed = embed;
+		[this.embed, this.reactionsEnabled] = [embed, false];
 	}
 
 	public async addReactions() {
@@ -95,7 +129,15 @@ export class Message implements Message.Like {
 
 		for (const emoticon of Message.emoticons)
 			this.reactions.set(emoticon.key, await this.embed.message.react(emoticon.value));
+		this.reactionsEnabled = true;
 	}
+
+	public async clearReactions() {
+		this.reactionsEnabled = false;
+		this.embed.message.clearReactions();
+	}
+
+	public clearDestruct() { clearTimeout(this.timer); }
 }
 
 export namespace Message {

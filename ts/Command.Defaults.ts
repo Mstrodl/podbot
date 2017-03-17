@@ -136,32 +136,6 @@ export namespace Defaults {
 		return parsedCommand.channel.sendEmbed(embedMessage, undefined, { split: true });
 	}
 
-	class ActiveMessage {
-		public readonly message: Discord.Message;
-		public reactions: { prev: Discord.MessageReaction, next: Discord.MessageReaction, stop: Discord.MessageReaction };
-
-		constructor(message: Discord.Message) { this.message = message; }
-
-		public async configureReactions() {
-			this.reactions = {
-				prev: await this.message.react(ActiveMessage.reactionEmoticons.prev),
-				next: await this.message.react(ActiveMessage.reactionEmoticons.next),
-				stop: await this.message.react(ActiveMessage.reactionEmoticons.stop)
-			};
-		}
-	}
-
-	namespace ActiveMessage {
-		export const reactionEmoticons: { prev: string, next: string, stop: string } = { prev: "\u{23ee}", next: "\u{23ed}", stop: "\u{1f5d1}" };
-	}
-
-	export async function test(parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> {
-		const message: Discord.Message = await sayEmbed(parsedCommand, { description: "testing 1", title: "testing" });
-		const reactions: ActiveMessage = new ActiveMessage(message);
-		reactions.configureReactions().catch(console.error);
-		return message;
-	}
-
 	export async function uptime(parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> {
 		if (!isBotOrDmChannel(parsedCommand.channel))
 			return null;

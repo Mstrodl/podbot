@@ -11,7 +11,7 @@ export class GenericBot implements GenericBot.Like {
 
 	constructor(name: string, token: string, { commands, onReady, trigger }: GenericBot.Options) {
 		console.log("starting up...");
-		[this.name, this.client, this.reactor, this.token] = [name, new Discord.Client(), new Reactor(), token];
+		[this.name, this.client, this.reactor, this.token] = [name, new Discord.Client(), new Reactor(this), token];
 		this.command = new GenericBot.Command(this, { commands, trigger });
 	}
 
@@ -21,8 +21,8 @@ export class GenericBot implements GenericBot.Like {
 		this.client.on("message", (message: Discord.Message): any => this.command.parser.parse.call(this.command.parser, message));
 		this.client.on("messageDelete", (message: Discord.Message): void => this.reactor.onMessageDelete(message));
 		this.client.on("messageDeleteBulk", (messages: Discord.Collection<string, Discord.Message>): void => this.reactor.onMessageDeleteBulk(messages));
-		this.client.on("messageReactionAdd", (messageReaction: Discord.MessageReaction, user: Discord.User): void => this.reactor.onMessageReaction(messageReaction, user));
-		this.client.on("messageReactionRemove", (messageReaction: Discord.MessageReaction, user: Discord.User): void => this.reactor.onMessageReaction(messageReaction, user));
+		this.client.on("messageReactionAdd", (messageReaction: Discord.MessageReaction, user: Discord.User): void => this.reactor.onMessageReactionAdd(messageReaction, user));
+		this.client.on("messageReactionRemove", (messageReaction: Discord.MessageReaction, user: Discord.User): void => this.reactor.onMessageReactionRemove(messageReaction, user));
 		return this;
 	}
 

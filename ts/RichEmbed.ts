@@ -28,8 +28,8 @@ export class RichEmbed extends Discord.RichEmbed implements RichEmbed.Like {
 	}
 
 	public async delete(): Promise<Discord.Message> { return this.message = await this.message.delete(); }
-	public next(): this { return this.set(this.embeds.length + 1); }
-	public prev(): this { return this.set(this.embeds.length - 1); }
+	public next(): this { return this.set(this.index + 1); }
+	public prev(): this { return this.set(this.index - 1); }
 
 	public set(index: number): this {
 		index = (index < 0) ? this.embeds.length + index : (index >= this.embeds.length) ? index - this.embeds.length : index;
