@@ -3,6 +3,10 @@ import * as Discord from "discord.js";
 import { GenericBot } from "./GenericBot";
 import { RichEmbed } from "./RichEmbed";
 
+// seperate this out, does RichEmbed belong in here?  maybe just as Embed? 
+// more logical structure?
+// finish constructor and like interfaces
+
 export class Reactor implements Reactor.Like {
 	public readonly bot: GenericBot;
 	public readonly channels: Collection<string, Channel>;
@@ -13,8 +17,9 @@ export class Reactor implements Reactor.Like {
 		const key: string = embed.message.channel.id;
 
 		if (!this.channels.has(key))
-			this.channels.set(key, new Channel(key));
+			this.channels.set(key, new Channel(key, this));
 		this.channels.get(key).set(embed);
+		Object.defineProperty(this, "bot", { enumerable: false });
 		return this;
 	}
 
@@ -48,6 +53,9 @@ export class Reactor implements Reactor.Like {
 				result = await message.embed.prev().update();
 				break;
 			case Message.emoticons.get("stop"):
+				await message.clearReactions();
+				return message.embed.message;
+			case Message.emoticons.get("delete"):
 				return message.embed.message.delete();
 		}
 		return result;
@@ -76,9 +84,11 @@ export namespace Reactor {
 export class Channel implements Channel.Like {
 	public readonly channelId: string;
 	public readonly messages: Collection<string, Message>;
+	public readonly reactor: Reactor;
 
-	constructor(channelId: string) {
-		[this.channelId, this.messages] = [channelId, new Collection<string, Message>()];
+	constructor(channelId: string, reactor: Reactor) {
+		[this.channelId, this.messages, this.reactor] = [channelId, new Collection<string, Message>(), reactor];
+		Object.defineProperty(this, "reactor", { enumerable: false });
 	}
 
 	public delete(messageId: string): boolean {
@@ -89,15 +99,15 @@ export class Channel implements Channel.Like {
 	public get(messageId: string): Message { return this.messages.get(messageId); }
 	public has(messageId: string): boolean { return this.messages.has(messageId); }
 
-	private messageDestructor: (key: string) => void = (key: string): void => {
-		this.messages.get(key).clearReactions();
-		this.messages.delete(key);
+	private messageDestructor: (key: string) => Promise<void> = async (key: string): Promise<void> => {
+		await this.messages.get(key).clearReactions();
+		await this.messages.delete(key);
 	}
 
 	public set(embed: RichEmbed): this {
 		const key: string = embed.message.id;
-		this.messages.set(key, new Message(embed)).get(key).addReactions().catch(console.error);
-		this.messages.get(key).timer = setTimeout(this.messageDestructor, Channel.messageTtlMinutes * 60 * 1000, key);
+		this.messages.set(key, new Message(embed, this)).get(key).addReactions().catch(console.error);
+		this.messages.get(key).timer = this.reactor.bot.client.setTimeout((): Promise<void> => this.messageDestructor(key).catch(console.error), Channel.messageTtlMinutes * 60 * 1000);
 		return this;
 	}
 }
@@ -115,13 +125,15 @@ export namespace Channel {
 }
 
 export class Message implements Message.Like {
+	public readonly channel: Channel;
 	public readonly embed: RichEmbed;
 	public reactions: Collection<string, Discord.MessageReaction>;
 	public reactionsEnabled: boolean;
 	public timer: NodeJS.Timer;
 
-	constructor(embed: RichEmbed) {
-		[this.embed, this.reactionsEnabled] = [embed, false];
+	constructor(embed: RichEmbed, channel: Channel) {
+		[this.channel, this.embed, this.reactionsEnabled] = [channel, embed, false];
+		Object.defineProperty(this, "channel", { enumerable: false });
 	}
 
 	public async addReactions() {
@@ -137,12 +149,12 @@ export class Message implements Message.Like {
 		this.embed.message.clearReactions();
 	}
 
-	public clearDestruct() { clearTimeout(this.timer); }
+	public clearDestruct() { this.channel.reactor.bot.client.clearTimeout(this.timer); }
 }
 
 export namespace Message {
 	export const emoticons: Collection<string, string> = new Collection<string, string>();
-	emoticons.set("prev", "\u{23ee}").set("next", "\u{23ed}").set("stop", "\u{1f5d1}");
+	emoticons.set("prev", "\u{23ee}").set("next", "\u{23ed}").set("stop", "\u{1f6d1}").set("delete", "\u{1f5d1}");
 
 	export interface Constructor {
 		prototype: Like;

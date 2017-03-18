@@ -1,17 +1,3 @@
-declare global {
-	interface String {
-		padStart: (targetLength: number, padString?: string) => string;
-	}
-}
-
-String.prototype.padStart = String.prototype.padStart || function (targetLength: number, padString: string = " "): string {
-	if (this.length > targetLength)
-		return this;
-	const charactersToAdd: number = targetLength - this.length;
-	let prefix: string = padString.repeat(charactersToAdd / padString.length);
-	return prefix.substr(0, charactersToAdd) + this;
-};
-
 export class DateFormatted extends Date implements DateFormatted.Like {
 	public static fromTimestamp(timestamp: number): DateFormatted { return new this(timestamp); }
 

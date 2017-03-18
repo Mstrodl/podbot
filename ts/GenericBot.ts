@@ -11,7 +11,7 @@ export class GenericBot implements GenericBot.Like {
 
 	constructor(name: string, token: string, { commands, onReady, trigger }: GenericBot.Options) {
 		console.log("starting up...");
-		[this.name, this.client, this.reactor, this.token] = [name, new Discord.Client(), new Reactor(this), token];
+		[this.name, this.client, this.reactor, this.token] = [name, new Discord.Client({ disabledEvents: ["TYPING_START"] }), new Reactor(this), token];
 		this.command = new GenericBot.Command(this, { commands, trigger });
 	}
 
@@ -27,7 +27,7 @@ export class GenericBot implements GenericBot.Like {
 	}
 
 	public clientLogin(token: string = this.token): this {
-		this.client.login(token);
+		this.client.login(token).catch(console.error);
 		this.token = undefined;
 		delete this.token;
 		return this;

@@ -1,4 +1,4 @@
-import { Collection} from "./Collection";
+import { Collection } from "./Collection";
 import * as Discord from "discord.js";
 import { GenericApi } from "./GenericApi";
 import { GenericBot } from "./GenericBot";

@@ -8,6 +8,14 @@ import * as Google from "./Google";
 import { Query } from "./Url";
 import { RichEmbed as NewRichEmbed } from "./RichEmbed";
 
+// change RichEmbed here locally to use the new RichEmbed
+// modify all below to follow example of db (4chan, google)
+// do a command that shows most popular user or something from mongo
+// youtube search command
+// something that checks youtube for new videos by channel (ie, PFC) and then posts them to server?
+// weather command?
+// fix regind command??????
+
 export class Defaults {
 	public static async ["4chan"](parsedCommand: GenericBot.Command.Parser.ParsedCommand): Promise<Discord.Message> { return Defaults.fourChan(parsedCommand); }
 }

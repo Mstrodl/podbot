@@ -21,10 +21,10 @@ commands.set("any", { command: (parsedCommand: GenericBot.Command.Parser.ParsedC
 	.set("say", { default: true })
 	.set("topic", { command: (parsedCommand: GenericBot.Command.Parser.ParsedCommand): void => { topic(parsedCommand).catch(console.error); } })
 	.set("uptime", { default: true });
+const bot: GenericBot = new GenericBot(name, secrets.token, { commands, trigger });
 
 async function login() {
 	const secrets: Crypt.SecretsBot = await Crypt.getSecrets("pfc");
-	const bot: GenericBot = new GenericBot(name, secrets.token, { commands, trigger });
 	bot.configure().login();
 }
 

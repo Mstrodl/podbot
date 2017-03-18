@@ -3,6 +3,8 @@ import * as ChildProcess from "child_process";
 import * as Net from "net";
 import { Path } from "./Url";
 
+// add client options for new clients disabledEvents include TYPING_START see https://discord.js.org/#/docs/main/master/typedef/ClientOptions?scrollTo=sync
+
 export class BotExecutor {
 	public readonly color: string;
 	public readonly file: Path;
@@ -26,7 +28,11 @@ export class BotExecutor {
 
 	private fork(): ChildProcess.ChildProcess { return ChildProcess.fork(this.file.toString(), [], { silent: true }); }
 	private onError(err: Error): void { console.error("BotExecutor error for " + this.name + "\n" + err.message); }
-	private onExit(code: number, signal: string): void { console.log("BotExecutor process " + this.name + " received " + signal + " and is exiting with code " + code.toString()); }
+
+	private onExit(code: number, signal: string): void {
+		console.log("BotExecutor process " + this.name + " received " + signal + " and is exiting with code " + code.toString());
+		this.process = this.fork();
+	}
 
 	private onMessage(message: any, sendHandle: Net.Socket | Net.Server): void {
 		if (message.name)
