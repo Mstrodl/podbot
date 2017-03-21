@@ -3,14 +3,14 @@ import { GenericBot } from "./GenericBot";
 
 export class RichEmbed extends Discord.RichEmbed implements RichEmbed.Like {
 	public readonly channel: GenericBot.Command.TextBasedChannel;
-	public readonly embeds: Array<Discord.RichEmbedOptions>;
+	public readonly embeds: Array<RichEmbed.Options>;
 	public index: number;
 	public message: Discord.Message;
 
-	constructor(parsedCommand: GenericBot.Command.Parser.ParsedCommand, embeds: Array<Discord.RichEmbedOptions>);
-	constructor(parsedCommand: GenericBot.Command.Parser.ParsedCommand, options?: Discord.RichEmbedOptions);
-	constructor(parsedCommand: GenericBot.Command.Parser.ParsedCommand, embedsOrOptions: Array<Discord.RichEmbedOptions> | Discord.RichEmbedOptions = {}) {
-		const options: Discord.RichEmbedOptions = Array.isArray(embedsOrOptions) ? embedsOrOptions[0] : embedsOrOptions;
+	constructor(parsedCommand: GenericBot.Command.Parser.ParsedCommand, embeds: Array<RichEmbed.Options>);
+	constructor(parsedCommand: GenericBot.Command.Parser.ParsedCommand, options?: RichEmbed.Options);
+	constructor(parsedCommand: GenericBot.Command.Parser.ParsedCommand, embedsOrOptions: Array<RichEmbed.Options> | RichEmbed.Options = {}) {
+		const options: RichEmbed.Options = Array.isArray(embedsOrOptions) ? embedsOrOptions[0] : embedsOrOptions;
 		super(Object.assign({
 			author: { icon_url: parsedCommand.requester.avatarURL, name: parsedCommand.requester.username },
 			color: 0x673888,
@@ -40,7 +40,7 @@ export class RichEmbed extends Discord.RichEmbed implements RichEmbed.Like {
 
 	public async send(): Promise<Discord.Message> { return this.message = await this.channel.sendEmbed(this, undefined, { split: true }); }
 
-	private setOptions(options: Discord.RichEmbedOptions = {}): this {
+	private setOptions(options: RichEmbed.Options = {}): this {
 		for (const option in options)
 			if (RichEmbed.options.has(option))
 				super[option] = options[option];
@@ -51,10 +51,12 @@ export class RichEmbed extends Discord.RichEmbed implements RichEmbed.Like {
 }
 
 export namespace RichEmbed {
+	export type Options = Discord.RichEmbedOptions;
+	export const options: Set<string> = new Set<string>(["title", "description", "url", "timestamp", "color", "fields", "author", "thumbnail", "image", "video", "footer"]);
 	export interface Constructor {
 		prototype: Like;
 
-		new?(parsedCommand: GenericBot.Command.Parser.ParsedCommand, options?: Discord.RichEmbedOptions): Like;
+		new?(parsedCommand: GenericBot.Command.Parser.ParsedCommand, options?: Options): Like;
 	}
 
 	export interface Like {
@@ -63,6 +65,4 @@ export namespace RichEmbed {
 
 		send(): Promise<Discord.Message>;
 	}
-
-	export const options: Set<string> = new Set<string>(["title", "description", "url", "timestamp", "color", "fields", "author", "thumbnail", "image", "video", "footer"]);
 }

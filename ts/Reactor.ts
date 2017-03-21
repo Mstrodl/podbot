@@ -72,7 +72,7 @@ export namespace Reactor {
 	export interface Command {
 		bot: GenericBot;
 		channel: GenericBot.Command.TextBasedChannel;
-		embeds: Array<Discord.RichEmbedOptions>;
+		embeds: Array<RichEmbed.Options>;
 	}
 
 	export interface Constructor {
@@ -84,7 +84,7 @@ export namespace Reactor {
 	}
 }
 
-export class Channel implements Channel.Like {
+class Channel implements Channel.Like {
 	public readonly channelId: string;
 	public readonly reactions: Collection<string, Reactions>;
 	public readonly reactor: Reactor;
@@ -119,7 +119,7 @@ export class Channel implements Channel.Like {
 	public setReactionDestructor(key: string): void { this.reactions.get(key).timer = this.reactor.bot.client.setTimeout((): Promise<void> => this.reactionDestructor(key).catch(console.error), Channel.messageTtlMinutes * 60 * 1000); }
 }
 
-export namespace Channel {
+namespace Channel {
 	export const messageTtlMinutes: number = 5;
 
 	export interface Constructor {
@@ -131,7 +131,7 @@ export namespace Channel {
 	}
 }
 
-export class Reactions implements Reactions.Like {
+class Reactions implements Reactions.Like {
 	public readonly channel: Channel;
 	public readonly embed: RichEmbed;
 	public reactions: Collection<string, Discord.MessageReaction>;
@@ -159,7 +159,7 @@ export class Reactions implements Reactions.Like {
 	public clearDestruct() { this.channel.reactor.bot.client.clearTimeout(this.timer); }
 }
 
-export namespace Reactions {
+namespace Reactions {
 	export const emoticons: Collection<string, string> = new Collection<string, string>();
 	emoticons.set("prev", "\u{23ee}").set("next", "\u{23ed}").set("stop", "\u{1f6d1}").set("delete", "\u{1f5d1}");
 
@@ -171,3 +171,5 @@ export namespace Reactions {
 		constructor: Constructor;
 	}
 }
+
+export { RichEmbed as Embed } from "./RichEmbed";

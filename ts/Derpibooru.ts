@@ -1,11 +1,9 @@
 import { Collection } from "./Collection";
-import * as Discord from "discord.js";
 import { GenericApi } from "./GenericApi";
 import { GenericBot } from "./GenericBot";
 import { Path, Query, Url } from "./Url";
 import * as Random from "./Random";
-import { Reactor } from "./Reactor";
-import { RichEmbed } from "./RichEmbed";
+import { Embed, Reactor } from "./Reactor";
 
 const filter_id: number = 41048;
 const url: Url = new Url("https://derpibooru.org");
@@ -15,7 +13,7 @@ const query: { search: Query, random: Query } = { search: new Query({ filter_id 
 export class NoponyError extends Error {}
 
 export class Derpibooru implements Derpibooru.Like, Reactor.Command {
-	private _embeds: Array<Discord.RichEmbedOptions>;
+	private _embeds: Array<Embed.Options>;
 	private _images: Array<Derpibooru.Image>;
 	public readonly bot: GenericBot;
 	public readonly channel: GenericBot.Command.TextBasedChannel;
@@ -33,10 +31,10 @@ export class Derpibooru implements Derpibooru.Like, Reactor.Command {
 		this.parsedCommand = parsedCommand;
 	}
 
-	public get embeds(): Array<Discord.RichEmbedOptions> {
+	public get embeds(): Array<Embed.Options> {
 		if (this._embeds)
 			return this._embeds;
-		return this._embeds = this.images.reduce<Array<Discord.RichEmbedOptions>>((embeds: Array<Discord.RichEmbedOptions>, image: Derpibooru.Image): Array<Discord.RichEmbedOptions> => {
+		return this._embeds = this.images.reduce<Array<Embed.Options>>((embeds: Array<Embed.Options>, image: Derpibooru.Image): Array<Embed.Options> => {
 			embeds.push({
 				description: image.file_name + " uploaded by " + image.uploader,
 				footer: { icon_url: Derpibooru.favIconUrl.toString(), text: image.tags },
@@ -45,7 +43,7 @@ export class Derpibooru implements Derpibooru.Like, Reactor.Command {
 				url: image.pageUrl }
 			);
 			return embeds;
-		}, new Array<Discord.RichEmbedOptions>());
+		}, new Array<Embed.Options>());
 	}
 
 	public get images(): Array<Derpibooru.Image> { return this._images; }
@@ -90,8 +88,8 @@ export class Derpibooru implements Derpibooru.Like, Reactor.Command {
 		this.images = shuffled;
 	}
 
-	public async send(): Promise<RichEmbed> {
-		const embed: RichEmbed = new RichEmbed(this.parsedCommand, this.embeds);
+	public async send(): Promise<Embed> {
+		const embed: Embed = new Embed(this.parsedCommand, this.embeds);
 		await embed.send();
 		return embed;
 	}
