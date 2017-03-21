@@ -12,9 +12,7 @@ export class Command implements Command.Like {
 	public readonly trigger: string;
 
 	constructor(bot: GenericBot, { commands, trigger = "!" }: Command.Options) {
-		this.bot = bot;
-		this.commands = commands;
-		this.trigger = trigger;
+		[this.bot, this.commands, this.trigger] = [bot, commands, trigger];
 		this.parser = new Command.Parser(this, { enabledCommands: (commands == undefined) ? Command.defaults : commands.keySet() });
 	}
 
