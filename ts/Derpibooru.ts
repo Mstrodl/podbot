@@ -1,9 +1,10 @@
 import { Collection } from "./Collection";
-import { Embed, Reactor } from "./Reactor";
 import { GenericApi } from "./GenericApi";
 import { GenericBot } from "./GenericBot";
 import { Path, Query, Url } from "./Url";
 import * as Random from "./Random";
+import { Embed, Reactor } from "./Reactor";
+import { quotes } from "./quotes";
 
 const filter_id: number = 41048;
 const url: Url = new Url("https://derpibooru.org");
@@ -36,7 +37,7 @@ export class Derpibooru implements Derpibooru.Like, Reactor.Command {
 			return this._embeds;
 		return this._embeds = this.images.reduce<Array<Embed.Options>>((embeds: Array<Embed.Options>, image: Derpibooru.Image): Array<Embed.Options> => {
 			embeds.push({
-				description: image.file_name + " uploaded by " + image.uploader,
+				description: "As Twiligh Sparkle once said: ```\n" + quotes[Math.floor(Math.random() * quotes.length)] + "```" + image.file_name + " uploaded by " + image.uploader,
 				footer: { icon_url: Derpibooru.favIconUrl.toString(), text: image.tags },
 				image: { url: image.imageUrl },
 				title: image.pageUrl,
