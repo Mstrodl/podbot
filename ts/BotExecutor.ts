@@ -3,7 +3,7 @@ import * as ChildProcess from "child_process";
 import * as Net from "net";
 import { Path } from "./Url";
 
-// add client options for new clients disabledEvents include TYPING_START see https://discord.js.org/#/docs/main/master/typedef/ClientOptions?scrollTo=sync
+const RESTART_DELAY_SECS: number = 60;
 
 export class BotExecutor {
 	public readonly color: string;
@@ -30,8 +30,8 @@ export class BotExecutor {
 	private onError(err: Error): void { console.error("BotExecutor error for " + this.name + "\n" + err.message); }
 
 	private onExit(code: number, signal: string): void {
-		console.log("BotExecutor process " + this.name + " received " + signal + " and is exiting with code " + code.toString());
-		this.process = this.fork();
+		console.log(this.prefix + "BotExecutor process " + this.name + " received " + signal + " and is exiting with code " + code.toString());
+		setTimeout((): void => this.configure(), BotExecutor.restartDelaySecs * 1000);
 	}
 
 	private onMessage(message: any, sendHandle: Net.Socket | Net.Server): void {
@@ -56,4 +56,6 @@ export namespace BotExecutor {
 		cyan: "\x1b[36m", 
 		white: "\x1b[37m"
 	}
+
+	export const restartDelaySecs: number = RESTART_DELAY_SECS;
 }

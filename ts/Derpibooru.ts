@@ -29,7 +29,7 @@ export class Derpibooru implements Derpibooru.Like, Reactor.Command {
 		if (parsedCommand.args === "" || parsedCommand.args === "random")
 			[this.query, this.type, this.url] = [query.random, "random", url.setPathname(pathname.random)];
 		else
-			[this.query, this.type, this.url, this.userInput] = [query.search.set("q", parsedCommand.args), "search", url.setPathname(pathname.search), parsedCommand.args];
+			[this.query, this.type, this.url, this.userInput] = [query.search.set("q", parsedCommand.args.replace(/best pony/g, "twilight sparkle")), "search", url.setPathname(pathname.search), parsedCommand.args];
 		this.parsedCommand = parsedCommand;
 	}
 

@@ -38,7 +38,8 @@ export class Reactor implements Reactor.Like {
 	private async onMessageReaction(type: "add" | "remove", reaction: Discord.MessageReaction, user?: Discord.User): Promise<Discord.Message> {
 		if (!reaction || !reaction.message || !this.channels.has(reaction.message.channel.id) || !this.channels.get(reaction.message.channel.id).has(reaction.message.id) || !Reactions.emoticons.some((emoticon: string): boolean => emoticon === reaction.emoji.name))
 			return undefined;
-		const reactions: Reactions = this.channels.get(reaction.message.channel.id).get(reaction.message.id);
+		const channel: Channel = this.channels.get(reaction.message.channel.id);
+		const reactions: Reactions = channel.get(reaction.message.id);
 		const users: Discord.Collection<string, Discord.User> = await reaction.fetchUsers();
 
 		if (!reactions.enabled || type === "add" && reaction.users.array().length === 1)
@@ -58,6 +59,8 @@ export class Reactor implements Reactor.Like {
 			case Reactions.emoticons.get("delete"):
 				return reactions.embed.message.delete();
 		}
+		channel.clearReactionDestructor(reaction.message.id);
+		channel.setReactionDestructor(reaction.message.id);
 		return result;
 	}
 
@@ -91,10 +94,10 @@ export class Channel implements Channel.Like {
 		Object.defineProperty(this, "reactor", { enumerable: false });
 	}
 
-	public clearReactionDestruct(messageId: string): void { this.reactions.get(messageId).clearDestruct(); }
+	public clearReactionDestructor(messageId: string): void { this.reactions.get(messageId).clearDestruct(); }
 
 	public delete(messageId: string): boolean {
-		this.clearReactionDestruct(messageId);
+		this.clearReactionDestructor(messageId);
 		return this.reactions.delete(messageId);
 	}
 
@@ -109,9 +112,11 @@ export class Channel implements Channel.Like {
 	public set(embed: RichEmbed): this {
 		const key: string = embed.message.id;
 		this.reactions.set(key, new Reactions(embed, this)).get(key).add().catch(console.error);
-		this.reactions.get(key).timer = this.reactor.bot.client.setTimeout((): Promise<void> => this.reactionDestructor(key).catch(console.error), Channel.messageTtlMinutes * 60 * 1000);
+		this.setReactionDestructor(key);
 		return this;
 	}
+
+	public setReactionDestructor(key: string): void { this.reactions.get(key).timer = this.reactor.bot.client.setTimeout((): Promise<void> => this.reactionDestructor(key).catch(console.error), Channel.messageTtlMinutes * 60 * 1000); }
 }
 
 export namespace Channel {
