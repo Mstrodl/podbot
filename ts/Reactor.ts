@@ -80,7 +80,15 @@ export namespace Reactor {
 	}
 
 	export interface Like {
+		readonly bot: GenericBot;
+		readonly channels: Collection<string, Channel>;
 		constructor: Constructor;
+
+		add(embed: RichEmbed): this;
+		onMessageDelete(message: Discord.Message): void;
+		onMessageDeleteBulk(messages: Discord.Collection<string, Discord.Message>): void;
+		onMessageReactionAdd(reaction: Discord.MessageReaction, user?: Discord.User): void;
+		onMessageReactionRemove(reaction: Discord.MessageReaction, user?: Discord.User): void;
 	}
 }
 
@@ -127,7 +135,17 @@ namespace Channel {
 	}
 
 	export interface Like {
+		readonly channelId: string;
 		constructor: Constructor;
+		readonly reactions: Collection<string, Reactions>;
+		readonly reactor: Reactor;
+
+		clearReactionDestructor(messageId: string): void;
+		delete(messageId: string): boolean;
+		get(messageId: string): Reactions;
+		has(messageId: string): boolean;
+		set(embed: RichEmbed): this;
+		setReactionDestructor(key: string): void;
 	}
 }
 
@@ -156,7 +174,7 @@ class Reactions implements Reactions.Like {
 		this.embed.message.clearReactions();
 	}
 
-	public clearDestruct() { this.channel.reactor.bot.client.clearTimeout(this.timer); }
+	public clearDestruct(): void { this.channel.reactor.bot.client.clearTimeout(this.timer); }
 }
 
 namespace Reactions {
@@ -168,7 +186,16 @@ namespace Reactions {
 	}
 
 	export interface Like {
+		readonly channel: Channel;
 		constructor: Constructor;
+		readonly embed: RichEmbed;
+		reactions: Collection<string, Discord.MessageReaction>;
+		enabled: boolean;
+		timer: NodeJS.Timer;
+
+		add(): void;
+		clear(): void;
+		clearDestruct(): void;
 	}
 }
 

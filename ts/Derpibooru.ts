@@ -1,9 +1,9 @@
 import { Collection } from "./Collection";
+import { Embed, Reactor } from "./Reactor";
 import { GenericApi } from "./GenericApi";
 import { GenericBot } from "./GenericBot";
 import { Path, Query, Url } from "./Url";
 import * as Random from "./Random";
-import { Embed, Reactor } from "./Reactor";
 
 const filter_id: number = 41048;
 const url: Url = new Url("https://derpibooru.org");
