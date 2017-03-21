@@ -28,7 +28,8 @@ export class Derpibooru implements Derpibooru.Like, Reactor.Command {
 		if (parsedCommand.args === "" || parsedCommand.args === "random")
 			[this.query, this.type, this.url] = [query.random, "random", url.setPathname(pathname.random)];
 		else
-			[this.query, this.type, this.url, this.userInput] = [query.search.set("q", parsedCommand.args.replace(/best pony/g, "twilight sparkle")), "search", url.setPathname(pathname.search), parsedCommand.args];
+			[this.query, this.type, this.url, this.userInput] = [query.search.set("q", parsedCommand.args.replace(/best pony/g, "
+															      t sparkle")), "search", url.setPathname(pathname.search), parsedCommand.args];
 		this.parsedCommand = parsedCommand;
 	}
 
@@ -37,7 +38,7 @@ export class Derpibooru implements Derpibooru.Like, Reactor.Command {
 			return this._embeds;
 		return this._embeds = this.images.reduce<Array<Embed.Options>>((embeds: Array<Embed.Options>, image: Derpibooru.Image): Array<Embed.Options> => {
 			embeds.push({
-				description: "As Twiligh Sparkle once said: ```\n" + quotes[Math.floor(Math.random() * quotes.length)] + "```" + image.file_name + " uploaded by " + image.uploader,
+				description: "As Twilight Sparkle once said: ```\n" + quotes[Math.floor(Math.random() * quotes.length)] + "```" + image.file_name + " uploaded by " + image.uploader,
 				footer: { icon_url: Derpibooru.favIconUrl.toString(), text: image.tags },
 				image: { url: image.imageUrl },
 				title: image.pageUrl,
